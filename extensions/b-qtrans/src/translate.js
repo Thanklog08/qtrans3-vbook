@@ -764,7 +764,9 @@ function translateText(text, from, to) {
         // Ngữ cảnh theo truyện: nhận truyện qua tên chương (dòng đầu) trong các mục lục đã gặp.
         var bookRef = useContext ? findBookForChapter(text) : null;
         var context = bookContextGet(bookRef);
-        lastBookInfo = bookRef ? { id: bookRef.id, chapter: bookRef.num, previousTail: context.tailUsed } : "chưa nhận ra truyện";
+        lastBookInfo = bookRef
+            ? { id: bookRef.id, chapter: bookRef.num, previousTail: context.tailUsed, doan: bookRef.guessed === true }
+            : "chưa nhận ra truyện";
         if (useQtNames && !isShortTextOrList) glossaryFromQt(text, context.glossary);
         
         var pinyinLangs = ['vi_tieuchuan', 'vi_sac', 'vi_NameEng', 'vi_layname'];
