@@ -192,10 +192,19 @@ function glossaryLine(glossary, text) {
     return parts.join("; ");
 }
 
-function buildContextBlock(glossaryText, previousTail) {
-    if (!glossaryText && !previousTail) return "";
+function worksLine(works, text) {
+    var parts = [];
+    for (var k in (works || {})) {
+        if (text.indexOf("《" + k + "》") > -1) parts.push("《" + k + "》 = \"" + works[k] + "\"");
+    }
+    return parts.join("; ");
+}
+
+function buildContextBlock(glossaryText, previousTail, worksText) {
+    if (!glossaryText && !previousTail && !worksText) return "";
     var block = "\n\n" + configContextHeader();
     if (glossaryText) block += "\n- Tên riêng đã dùng, giữ đúng cách dịch: " + glossaryText;
+    if (worksText) block += "\n- Tên tác phẩm đã dùng trong truyện này, giữ NGUYÊN: " + worksText;
     if (previousTail) block += "\n- Phần cuối của đoạn đã dịch ngay trước:\n\"\"\"\n" + previousTail + "\n\"\"\"";
     return block;
 }
@@ -769,8 +778,10 @@ function translateText(text, from, to) {
         // Ngữ cảnh theo truyện: nhận truyện qua tên chương (dòng đầu) trong các mục lục đã gặp.
         var bookRef = useContext ? findBookForChapter(text) : null;
         var context = bookContextGet(bookRef);
+        var worksKnown = 0;
+        for (var wk in (context.works || {})) worksKnown++;
         lastBookInfo = bookRef
-            ? { id: bookRef.id, chapter: bookRef.num, previousTail: context.tailUsed, doan: bookRef.guessed === true }
+            ? { id: bookRef.id, chapter: bookRef.num, previousTail: context.tailUsed, doan: bookRef.guessed === true, tacPham: worksKnown }
             : "chưa nhận ra truyện";
         if (useQtNames && !isShortTextOrList) glossaryFromQt(text, context.glossary);
         
@@ -834,7 +845,7 @@ function translateText(text, from, to) {
                     continue;
                 }
                 var previousTail = k > 0 ? String(finalParts[k - 1]).slice(-CONTEXT_TAIL_CHARS) : (useContext ? context.tail : "");
-                var promptForChunk = selectedPrompt + (useContext ? buildContextBlock(glossaryLine(context.glossary, textChunks[k]), previousTail) : "");
+                var promptForChunk = selectedPrompt + (useContext ? buildContextBlock(glossaryLine(context.glossary, textChunks[k]), previousTail, worksLine(context.works, textChunks[k])) : "");
                 // Tuyến phiên âm tự đổi sang Hán-Việt rồi mới gửi, không cần bản convert.
                 if (configQtBase() && !isPinyinRoute && from === "zh") promptForChunk += qtConvertBlock(textChunks[k]);
                 logStep("đang gọi " + currentModel + ", đoạn " + (k + 1) + "/" + textChunks.length);
@@ -857,7 +868,11 @@ function translateText(text, from, to) {
                 // Tên model xem ở mục chẩn đoán qtrans3_last_call.
                 finalContent = finalParts.join('\n\n');
                 translationSuccessful = true;
-                if (useContext) bookContextPut(bookRef, finalContent, context.glossary);
+                if (useContext && !isPinyinRoute) {
+                    finalContent = worksApply(context.works, text, finalContent);
+                    if (typeof lastBookInfo === "object" && lastBookInfo) lastBookInfo.tacPhamSua = worksApplied;
+                }
+                if (useContext) bookContextPut(bookRef, finalContent, context.glossary, isPinyinRoute ? null : text);
                 break; 
             }
         } 
@@ -868,7 +883,7 @@ function translateText(text, from, to) {
             if (lastTry.status === "success") {
                 finalContent = lastTry.data;
                 translationSuccessful = true;
-                if (useContext) bookContextPut(bookRef, finalContent, context.glossary);
+                if (useContext) bookContextPut(bookRef, finalContent, context.glossary, isPinyinRoute ? null : text);
             } else {
                 errorLog[modelsToIterate[0] + " (prompt tối giản)"] = lastTry.details;
             }

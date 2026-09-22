@@ -43,6 +43,8 @@ var LINES_MAX = 1500;
 var LINES_TTL = 14 * 24 * 3600 * 1000;
 var CONTEXT_TAIL_CHARS = 700;
 var GLOSSARY_MAX = 150;
+// Tên tác phẩm 《…》 đã dịch của truyện: khoá một cách gọi cho cả bộ.
+var WORKS_MAX = 200;
 // Đuôi ngữ cảnh giữ theo SỐ CHƯƠNG: vBook tải trước 10 chương nên chương vừa dịch xong thường không phải chương
 // người đọc mở kế tiếp.
 var TAILS_MAX = 12;
@@ -171,7 +173,7 @@ function purgeAllCaches() {
 // ---- chẩn đoán gửi kèm header x-qtrans-diag của request (Cedric ghi header vào log). Trên iPhone không có
 // cách nào khác đọc localStorage của tiện ích; đây là kênh duy nhất để biết bộ nhớ có giữ được giữa các lượt không.
 var QT3_PROBE = "qtrans3_probe";
-var QT3_VERSION = 20;
+var QT3_VERSION = 21;
 var qtDiag = { n: 0, prev: -1, wr: "?", miss: "" };
 
 // Ghi dấu lượt rồi đọc lại ngay (wr) và đo tuổi dấu của lượt trước (prev, giây): prev luôn -1 nghĩa là ghi không
@@ -419,15 +421,40 @@ function registerToc(lines) {
 // không tra được tên trong mục lục, và cũng không biết số chương. Bản ≤ 17 bỏ luôn ngữ cảnh; bản 18 đoán theo
 // truyện vừa có mục lục/chương đi qua, kèm hai rào: hết hạn sau LAST_BOOK_TTL và chương phải có ít nhất một tên
 // riêng của truyện đó (sổ tên chương trước) để không nối nhầm sang truyện khác đang đọc song song.
-function looksLikeSameBook(book, text) {
+// Số tên riêng (bảng Name của truyện) xuất hiện trong chương; known=false khi truyện chưa có bảng tên.
+function bookNameHits(book, text) {
     var glossary = book && book.ctx && book.ctx.gv === 2 ? book.ctx.glossary : null;
-    if (!glossary) return true;
-    var seen = 0;
-    for (var k in glossary) {
+    var hits = 0, seen = 0, s = String(text);
+    for (var k in (glossary || {})) {
         seen++;
-        if (String(text).indexOf(k) > -1) return true;
+        if (k.length >= 2 && s.indexOf(k) > -1) hits++;
     }
-    return seen === 0;
+    return { hits: hits, known: seen > 0 };
+}
+
+// Bản 18 chỉ xét truyện dùng gần nhất: đọc hai truyện song song (iPhone 22/9: dịch hàng loạt võ hiệp trong lúc đọc
+// đô thị) thì chương bị gán sang truyện kia — kéo theo văn phong, bảng tên và đuôi ngữ cảnh sai. Bản 21 chấm mọi
+// truyện vừa dùng theo số tên riêng có mặt trong chương và chỉ chọn khi một truyện trội hẳn.
+function guessBook(store, text) {
+    var last = store.last;
+    if (!last || !store.b[last.id] || qtNow() - (last.at || 0) > LAST_BOOK_TTL) return null;
+    var best = null, second = 0, candidates = 0;
+    for (var id in store.b) {
+        var book = store.b[id];
+        if (qtNow() - (book.used || 0) > LAST_BOOK_TTL && id !== last.id) continue;
+        candidates++;
+        var r = bookNameHits(book, text);
+        var score = r.known ? r.hits : 0;
+        if (!best || score > best.score) { second = best ? best.score : 0; best = { id: id, score: score, known: r.known }; }
+        else if (score > second) second = score;
+    }
+    if (!best) return null;
+    if (candidates === 1) {
+        // Chỉ một truyện đang đọc: như bản 18, cần ít nhất một tên riêng khi truyện đã có bảng tên.
+        return (!best.known || best.score >= 1) ? best.id : null;
+    }
+    if (best.score >= 2 && best.score >= 2 * second) return best.id;
+    return null;
 }
 
 // Chương đang dịch thuộc truyện nào: tra tiêu đề trong 5 dòng đầu; không thấy thì đoán theo truyện gần nhất.
@@ -448,11 +475,10 @@ function findBookForChapter(text) {
             return { id: id, num: num !== null ? num : titles[h] };
         }
     }
-    var last = store.last;
-    if (!last || !store.b[last.id] || qtNow() - (last.at || 0) > LAST_BOOK_TTL) return null;
-    if (!looksLikeSameBook(store.b[last.id], text)) return null;
-    rememberBook(last.id);
-    return { id: last.id, num: null, guessed: true };
+    var guessed = guessBook(store, text);
+    if (!guessed) return null;
+    rememberBook(guessed);
+    return { id: guessed, num: null, guessed: true };
 }
 
 // Truyện vừa được dùng: chỉ đổi chỉ mục, không ghi lại truyện nào. Nếu lượt này còn ghi đuôi/điểm thì booksSave sau
@@ -464,9 +490,9 @@ function rememberBook(id) {
 }
 
 function bookContextGet(ref) {
-    if (!ref) return { tail: "", glossary: {}, tailUsed: false };
+    if (!ref) return { tail: "", glossary: {}, works: {}, tailUsed: false };
     var book = booksLoad().b[ref.id];
-    if (!book) return { tail: "", glossary: {}, tailUsed: false };
+    if (!book) return { tail: "", glossary: {}, works: {}, tailUsed: false };
     var ctx = book.ctx || null;
     // gv 2: bảng tên lấy từ Name (bản 15). Bảng cũ lẫn cụm VietPhrase thì bỏ.
     var glossary = ctx && ctx.gv === 2 && ctx.glossary ? ctx.glossary : {};
@@ -483,14 +509,98 @@ function bookContextGet(ref) {
         // Không biết số chương (nguồn không lặp tên chương): nối đuôi của lượt ngay trước nếu vừa mới dịch.
         tail = String(ctx.tail || "");
     }
-    return { tail: tail, glossary: glossary, tailUsed: tail !== "" };
+    return { tail: tail, glossary: glossary, works: book.works || {}, tailUsed: tail !== "" };
 }
 
-function bookContextPut(ref, translated, glossary) {
+// ---- tên tác phẩm 《…》 ----
+// Log Cedric 22/9 (全职艺术家, 592 chương): 73/164 tác phẩm bị dịch 2–5 cách (《东方快车谋杀案》 5 cách), chỉ hai tên có
+// trong ví dụ của prompt là ổn định. Ghép 《X》 của dòng gốc với "…" của dòng dịch khi số dòng và số ngoặc khớp, lưu
+// theo truyện (lần đầu thắng), gửi lại trong Ngữ cảnh và sửa thẳng bản dịch nếu model vẫn đổi tên.
+var WORK_ZH = /《([^《》\n]{1,60})》/g;
+var WORK_VI = /["\u201c\u00ab]([^"\u201c\u201d\u00ab\u00bb\n]{1,80})["\u201d\u00bb]/g;
+
+function qtNonBlankLines(text) {
+    var out = [], lines = String(text).split("\n");
+    for (var i = 0; i < lines.length; i++) if (lines[i].trim()) out.push(lines[i]);
+    return out;
+}
+
+function qtMatchAll(re, s) {
+    var out = [], m;
+    re.lastIndex = 0;
+    while ((m = re.exec(s)) !== null) out.push(m);
+    return out;
+}
+
+// Dòng dịch có lời thoại trong “…” thì số ngoặc lệch với số 《》 → bỏ qua dòng đó, không đoán.
+function worksPairsOfLine(src, dst) {
+    var zh = qtMatchAll(WORK_ZH, src);
+    if (zh.length === 0) return [];
+    var vi = qtMatchAll(WORK_VI, dst);
+    if (vi.length !== zh.length) return [];
+    var pairs = [];
+    for (var i = 0; i < zh.length; i++) {
+        var name = vi[i][1].trim();
+        if (!name || /[.!?;:…]/.test(name)) return [];
+        pairs.push([zh[i][1], name, vi[i]]);
+    }
+    return pairs;
+}
+
+function worksLearn(book, source, translated) {
+    if (!book.works) book.works = {};
+    var count = 0;
+    for (var c in book.works) count++;
+    var s = qtNonBlankLines(source), t = qtNonBlankLines(translated);
+    if (s.length !== t.length) return 0;
+    var added = 0;
+    for (var i = 0; i < s.length && count < WORKS_MAX; i++) {
+        var pairs = worksPairsOfLine(s[i], t[i]);
+        for (var j = 0; j < pairs.length && count < WORKS_MAX; j++) {
+            if (book.works[pairs[j][0]] !== undefined) continue;
+            book.works[pairs[j][0]] = pairs[j][1];
+            count++; added++;
+        }
+    }
+    return added;
+}
+
+var worksApplied = 0;
+
+// Thay tên tác phẩm trong bản dịch bằng tên đã khoá của truyện; chỉ đụng dòng ghép được chắc chắn.
+function worksApply(works, source, translated) {
+    worksApplied = 0;
+    if (!works) return translated;
+    var any = false;
+    for (var w in works) { any = true; break; }
+    if (!any) return translated;
+    var s = qtNonBlankLines(source), lines = String(translated).split("\n");
+    var t = [];
+    for (var i = 0; i < lines.length; i++) if (lines[i].trim()) t.push(i);
+    if (s.length !== t.length) return translated;
+    for (var k = 0; k < s.length; k++) {
+        var pairs = worksPairsOfLine(s[k], lines[t[k]]);
+        if (pairs.length === 0) continue;
+        var line = lines[t[k]], out = "", pos = 0;
+        for (var p = 0; p < pairs.length; p++) {
+            var want = works[pairs[p][0]], m = pairs[p][2];
+            if (want === undefined || want === pairs[p][1]) continue;
+            var open = m[0].charAt(0), close = m[0].charAt(m[0].length - 1);
+            out += line.substring(pos, m.index) + open + want + close;
+            pos = m.index + m[0].length;
+            worksApplied++;
+        }
+        if (pos > 0) lines[t[k]] = out + line.substring(pos);
+    }
+    return lines.join("\n");
+}
+
+function bookContextPut(ref, translated, glossary, source) {
     if (!ref) return;
     var store = booksLoad();
     var book = store.b[ref.id];
     if (!book) return;
+    if (source !== undefined && source !== null) { try { worksLearn(book, source, translated); } catch (eW) {} }
     var keys = [];
     for (var k in glossary) keys.push(k);
     for (var i = 0; i < keys.length - GLOSSARY_MAX; i++) delete glossary[keys[i]];
@@ -521,6 +631,14 @@ function genreRemember(ref, scores) {
     var store = booksLoad();
     var book = store.b[ref.id];
     if (!book) return scores;
+    if (ref.guessed === true) {
+        // Chương đoán truyện: dùng điểm của truyện để chọn văn phong nhưng không cộng vào sổ — đoán sai một lần
+        // không được làm truyện đổi giọng.
+        var view = {};
+        for (var g in (book.g || {})) view[g] = book.g[g];
+        for (var g2 in scores) view[g2] = (view[g2] || 0) + scores[g2];
+        return view;
+    }
     var total = book.g || {};
     for (var k in scores) total[k] = (total[k] || 0) + scores[k];
     // Giữ điểm ở mức vừa phải để truyện đổi giọng giữa chừng vẫn theo kịp.
