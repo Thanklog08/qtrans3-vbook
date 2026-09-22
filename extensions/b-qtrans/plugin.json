@@ -3,7 +3,7 @@
     "id": "b-qtrans",
     "name": "B-Qtrans",
     "author": "BBook",
-    "version": 16,
+    "version": 17,
     "source": "http://127.0.0.1:8317",
     "regexp": "",
     "description": "Dịch truyện bằng Gemini qua proxy Cedric Web (API chuẩn OpenAI). Nhập địa chỉ, khoá, model và prompt trong cài đặt.",
@@ -260,7 +260,7 @@
     },
     "qt_base_k": {
       "title": "QT · Gửi kèm bản convert Quick Translate",
-      "subtitle": "Tắt (khuyên dùng): chỉ gửi bảng tên Name mà QT nhận ra. Bật: gửi thêm cả bản convert QT của đoạn đang dịch. Đã thử: model nhanh (3.1-flash-lite) hay chép lỗi của convert; model mạnh (3.6-flash-high) dùng ổn nhưng chậm (~39 s/chương). Chỉ nên bật khi từ điển QT của bạn đầy đủ và dùng model mạnh",
+      "subtitle": "Bật: gửi thêm bản convert QT của đoạn đang dịch. Chỉ nên bật với model mạnh",
       "default": "false",
       "mode": "toggle",
       "format": "text"
