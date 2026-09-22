@@ -1,9 +1,11 @@
-"""Chép tiện ích Q-trans 3 từ repo phát triển vào kho công khai này.
+"""Chép tiện ích Q-trans 3 từ repo phát triển vào kho công khai này (bản phát hành tên B-Qtrans).
 
     python tools/sync_from_dev.py [đường dẫn tới extensions/qtrans3-cedric]
 
-Việc nó làm: chép plugin.json, icon.png, src/*.js (bỏ apikey.js), xoá trắng ô "Địa chỉ Cedric Web" để repo công
-khai không mang endpoint riêng, dựng lại plugin.zip và cập nhật version trong kho (plugin.json ở gốc).
+Việc nó làm: chép plugin.json + src/*.js (bỏ apikey.js), đổi `metadata.name`/`metadata.id` sang B-Qtrans/b-qtrans
+để cài song song được với bản nhập từ file zip, xoá trắng ô "Địa chỉ Cedric Web" cho repo công khai, dựng lại
+plugin.zip và cập nhật version trong kho (plugin.json ở gốc). KHÔNG chép icon.png: icon ở đây đã đổi màu để phân
+biệt với bản zip.
 """
 import io
 import json
@@ -16,9 +18,13 @@ import sys
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEFAULT_SRC = os.environ.get("QTRANS3_DEV_EXT", os.path.join(
     os.path.dirname(HERE), "vbook-ext", "extensions", "qtrans3-cedric"))
-EXT = os.path.join(HERE, "extensions", "qtrans3-cedric")
+EXT = os.path.join(HERE, "extensions", "b-qtrans")
+NAME = "B-Qtrans"
+EXT_ID = "b-qtrans"
 # Xoá trắng giá trị mặc định của ô địa chỉ, không viết endpoint nào vào repo công khai này.
 CEDRIC_URL_DEFAULT = re.compile(r'("cedric_url_ag"\s*:\s*\{[^{}]*?"default"\s*:\s*)"[^"]*"')
+META_NAME = re.compile(r'("metadata"\s*:\s*\{[^{}]*?"name"\s*:\s*)"[^"]*"')
+META_ID = re.compile(r'("metadata"\s*:\s*\{[^{}]*?"id"\s*:\s*)"[^"]*"')
 
 
 def main():
@@ -26,7 +32,6 @@ def main():
     if not os.path.isdir(src):
         sys.exit("không thấy thư mục nguồn: " + src)
 
-    shutil.copy2(os.path.join(src, "icon.png"), EXT)
     shutil.copy2(os.path.join(src, "plugin.json"), EXT)
     src_dir = os.path.join(EXT, "src")
     for f in os.listdir(src_dir):
@@ -36,12 +41,15 @@ def main():
             continue
         shutil.copy2(os.path.join(src, "src", f), src_dir)
 
-    # Endpoint riêng không đi vào bản công khai; máy đã cài vẫn giữ giá trị đã lưu.
     manifest = os.path.join(EXT, "plugin.json")
     text = io.open(manifest, encoding="utf-8").read()
     text, blanked = CEDRIC_URL_DEFAULT.subn(r'\1""', text, count=1)
     if not blanked:
         sys.exit("không tìm thấy ô cedric_url_ag để xoá trắng — kiểm plugin.json rồi chạy lại")
+    text, renamed = META_NAME.subn(r'\1"%s"' % NAME, text, count=1)
+    text, reided = META_ID.subn(r'\1"%s"' % EXT_ID, text, count=1)
+    if not (renamed and reided):
+        sys.exit("không đổi được metadata.name/id — kiểm plugin.json rồi chạy lại")
     text = text.replace('"subtitle": "Không có /v1 ở cuối.', '"subtitle": "BẮT BUỘC nhập. Không có /v1 ở cuối.', 1)
     if not text.endswith("\n"):
         text += "\n"
@@ -53,11 +61,11 @@ def main():
     index_path = os.path.join(HERE, "plugin.json")
     index = json.load(io.open(index_path, encoding="utf-8"))
     for entry in index["data"]:
-        if entry["name"].startswith("Q-trans 3"):
+        if entry["name"] == NAME:
             entry["version"] = version
     io.open(index_path, "w", encoding="utf-8", newline="\n").write(
         json.dumps(index, ensure_ascii=False, indent=4) + "\n")
-    print("đã đồng bộ, version %s" % version)
+    print("đã đồng bộ %s, version %s" % (NAME, version))
 
 
 main()

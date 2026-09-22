@@ -1,13 +1,21 @@
-# Q-trans 3 (Cedric) — kho tiện ích cho vBook
+# B-Qtrans — kho tiện ích dịch cho vBook
 
-Tiện ích dịch của vBook: dịch truyện Trung sang tiếng Việt bằng model gọi qua [Cedric Web](https://github.com/) (API chuẩn OpenAI, `/v1/chat/completions`). Repo này chỉ tồn tại để vBook **tự cập nhật** được, không phải nơi phát triển.
+Tiện ích dịch của vBook: dịch truyện Trung sang tiếng Việt bằng model gọi qua Cedric Web (API chuẩn OpenAI,
+`/v1/chat/completions`). Đây là bản phát hành của Q-trans 3; repo này chỉ tồn tại để vBook **tự cập nhật** được,
+không phải nơi phát triển.
+
+Tên và id ở đây (`B-Qtrans` / `b-qtrans`) **khác** bản nhập bằng file zip (`Q-trans 3 (Cedric)` / `qtrans3-cedric`),
+nên hai bản cài song song được, mỗi bản có cài đặt và bộ nhớ riêng — tiện để so sánh. Icon màu xanh lá để phân biệt.
 
 ## Cài và cập nhật trong vBook
 
 1. Copy URL kho: `https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/plugin.json`
-2. vBook › **Cài đặt** › **Kho tiện ích** › **Thêm kho**, dán URL.
-3. Làm mới danh sách, cài **Q-trans 3 (Cedric)**.
-4. Bản sau chỉ cần làm mới kho: version trong `plugin.json` tăng thì vBook hiện nút cập nhật. Giá trị đã lưu ở Settings được giữ vì `metadata.id` không đổi.
+2. vBook › **Cài đặt** › **Phần mở rộng** › **⋮** › **Kho lưu trữ** › **+**, dán URL.
+3. Quay lại danh sách, tìm **B-Qtrans**, bấm tải.
+4. Bản sau chỉ cần mở lại danh sách: version trong `plugin.json` tăng thì vBook hiện mục **Cập nhật**, bấm một lần là xong và **giữ nguyên cài đặt đã lưu** (đã kiểm trên vBook 1.0).
+
+Bản nhập từ file zip mang badge DEV và **không** nhận cập nhật từ kho — muốn dùng đường kho thì cài bản này.
+Xoá một tiện ích là mất luôn cài đặt đã lưu của nó.
 
 ## Phải tự nhập sau khi cài
 
@@ -26,7 +34,9 @@ Mã nguồn thật nằm trong repo phát triển (`vbook-ext/extensions/qtrans3
 
 ```
 python tools/sync_from_dev.py                    # hoặc: python tools/sync_from_dev.py <đường dẫn ext>
-git add -A && git commit -m "Q-trans 3 v<N>" && git push
+git add -A && git commit -m "B-Qtrans v<N>" && git push
 ```
 
-`sync_from_dev.py` chép `plugin.json`, `icon.png`, `src/*.js`, xoá trắng ô Địa chỉ Cedric, dựng lại `plugin.zip` và đồng bộ `version` trong kho. Tự sửa file ở đây rồi quên bên kia thì lần sync sau bị ghi đè.
+`sync_from_dev.py` chép `plugin.json` + `src/*.js`, đổi `metadata.name`/`id` sang B-Qtrans/b-qtrans, xoá trắng ô Địa
+chỉ Cedric, dựng lại `plugin.zip` và đồng bộ `version` trong kho. Nó **không** chép `icon.png` (icon ở đây đã đổi
+màu). Tự sửa file ở đây rồi quên bên kia thì lần sync sau bị ghi đè.
