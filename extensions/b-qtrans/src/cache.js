@@ -1,64 +1,97 @@
-// Bộ nhớ của Q-trans 3 (bản 10–11). Mọi mục đều có giới hạn; người dùng xoá bằng tay ở trang tiện ích › Bộ nhớ cục bộ.
+// Bộ nhớ của Q-trans 3 (bản 19). Mọi mục đều có giới hạn; người dùng xoá bằng tay ở trang tiện ích › Bộ nhớ cục bộ.
 //
-//   qtrans3_books    ngữ cảnh THEO TRUYỆN: truyện nhận ra từ mục lục vBook đã gửi dịch (tên chương → truyện, số
-//                    chương); mỗi truyện giữ đuôi bản dịch chương gần nhất + bảng tên. Tối đa 6 truyện.
-//   qtrans3_recent   bản dịch vừa xong (45 phút, 10 mục, 150.000 ký tự): vBook gọi lại sau khi hết giờ chờ, hoặc gọi
-//                    song song cùng nội dung, thì trả ngay không gọi API lần nữa.
-//   qtrans3_inflight lượt đang dịch (60 giây, chờ tối đa 40 giây): lượt thứ hai cùng nội dung chờ lượt đầu thay vì gọi API song song.
-//   qtrans3_chunks   từng đoạn chương đã dịch (6 giờ, 40 đoạn, 150.000 ký tự): lưu NGAY sau mỗi lượt gọi. Trình đọc
-//                    vBook trên iPhone ngắt tiện ích sau ~30 giây; lần thử lại chỉ gửi đoạn còn thiếu.
-//   qtrans3_log      nhật ký 15 lượt gần nhất: bắt đầu, từng bước, kết thúc (lượt bị ngắt dừng ở bước cuối ghi được).
-//   qtrans3_lines    cache theo dòng cho danh sách/mục lục (4.000 dòng, 14 ngày): mở lại truyện không dịch lại mục lục.
+// Bản ≤ 18 gom mọi thứ vào vài cục JSON lớn (sổ truyện ~690k, mục lục ~440k, chương/đoạn 150k mỗi cục) và mỗi lượt
+// dịch một chương parse cục sổ truyện 5 lần, ghi lại 3 lần: ~4 MB parse + ~2,3 MB ghi cho MỘT chương. Trên iPhone
+// (900 chương/ngày, 2 lượt song song) đây là tải vô lý cho cầu localStorage của vBook. Bản 19 chia nhỏ:
 //
-// Các mục cũ (qtrans3_context chung cho mọi truyện; vbook_cache_manifest + vbook_fp_cache_* lưu nguyên chương) bị xoá.
+//   qtrans3_c_<khoá>  một bản dịch chương hoặc một đoạn: {v, t}. Chỉ mục qtrans3_cidx [[khoá, t, dài]…] ≤ 120 mục,
+//                     ≤ 800.000 ký tự, 7 ngày. Mở lại chương đã dịch không tốn lượt gọi nào; lượt chạy chồng nhau không
+//                     xoá mục của nhau vì mỗi mục một khoá.
+//   qtrans3_b_<id>    một truyện: tên chương (≤ 1.500) → số chương, 12 đuôi gần nhất, bảng tên, điểm thể loại.
+//                     Chỉ mục qtrans3_bidx {ids, last}. Chỉ truyện có thay đổi mới được ghi lại.
+//   qtrans3_lines     cache theo dòng cho danh sách/mục lục (≤ 1.500 dòng, 14 ngày); chỉ đường danh sách mới đọc.
+//   qtrans3_inflight  lượt đang dịch (60 giây, chờ tối đa 40 giây).
+//   qtrans3_log       nhật ký 15 lượt gần nhất.
+//
+// Trong một lượt chạy, mỗi khoá chỉ parse một lần (memo). qtStats đếm số lần đọc/ghi và cục ghi lớn nhất, ghi ra
+// qtrans3_last_call.storage để nghiệm thu trên máy thật. Khoá cũ (qtrans3_books/recent/chunks) tự chuyển ở lượt đầu.
 
-var QT3_BOOKS = "qtrans3_books";
-var QT3_RECENT = "qtrans3_recent";
 var QT3_INFLIGHT = "qtrans3_inflight";
 var QT3_LINES = "qtrans3_lines";
+var QT3_LOG = "qtrans3_log";
+var QT3_BIDX = "qtrans3_bidx";
+var QT3_BOOK = "qtrans3_b_";
+var QT3_CIDX = "qtrans3_cidx";
+var QT3_ENTRY = "qtrans3_c_";
+// Bản ≤ 18
+var QT3_BOOKS_OLD = "qtrans3_books";
+var QT3_RECENT_OLD = "qtrans3_recent";
+var QT3_CHUNKS_OLD = "qtrans3_chunks";
+
 var BOOKS_MAX = 6;
-var TITLES_PER_BOOK = 4000;
+var TITLES_PER_BOOK = 1500;
 var BOOK_TTL = 7 * 24 * 3600 * 1000;
-var RECENT_MAX = 10;
-var RECENT_CHARS = 150000;
-var RECENT_TTL = 45 * 60 * 1000;
+var ENTRY_MAX = 80;
+var ENTRY_CHARS = 500000;
+var ENTRY_TTL = 7 * 24 * 3600 * 1000;
 // Lượt bị app ngắt không xoá được dấu "đang dịch" (finally không chạy): dấu phải hết hạn nhanh, và lượt sau chỉ chờ
 // ngắn, nếu không nó ngồi chờ một lượt đã chết rồi bị ngắt theo.
 var INFLIGHT_TTL = 60 * 1000;
 var INFLIGHT_WAIT = 40 * 1000;
-var CHUNKS_MAX = 40;
-var CHUNKS_CHARS = 150000;
-var CHUNKS_TTL = 6 * 3600 * 1000;
-var QT3_CHUNKS = "qtrans3_chunks";
-var QT3_LOG = "qtrans3_log";
 var LOG_MAX = 15;
-var LINES_MAX = 4000;
+var LINES_MAX = 1500;
 var LINES_TTL = 14 * 24 * 3600 * 1000;
 var CONTEXT_TAIL_CHARS = 700;
 var GLOSSARY_MAX = 150;
-// Đuôi ngữ cảnh giữ theo SỐ CHƯƠNG, không phải một ô duy nhất: vBook tải trước 10 chương nên chương vừa dịch
-// xong thường không phải chương người đọc mở kế tiếp (bản ≤ 15 để ctx đứng ở chương cuối của lượt tải trước,
-// chương đọc thật không khớp num-1 nên mất sạch đuôi).
+// Đuôi ngữ cảnh giữ theo SỐ CHƯƠNG: vBook tải trước 10 chương nên chương vừa dịch xong thường không phải chương
+// người đọc mở kế tiếp.
 var TAILS_MAX = 12;
 // Đoán truyện theo lượt gần nhất (bản 18): mục lục/chương của truyện đó phải mới đi qua trong 30 phút.
 var LAST_BOOK_TTL = 30 * 60 * 1000;
-// Không biết số chương thì chỉ nối đuôi khi chương trước của truyện đó vừa dịch xong trong 15 phút — tức đang
-// đọc/dịch tuần tự. Lâu hơn thì chỉ gửi bảng tên, không gửi đuôi có thể đã cách vài chương.
+// Không biết số chương thì chỉ nối đuôi khi chương trước của truyện đó vừa dịch xong trong 15 phút.
 var CHAIN_TTL = 15 * 60 * 1000;
 
 function qtNow() { return new Date().getTime(); }
 
-function qtLoad(key, fallback) {
+// ---- lớp đọc/ghi: memo trong lượt + đếm ----
+var qtMem = {};
+var qtStats = { reads: 0, writes: 0, removes: 0, maxWrite: 0, bytes: 0 };
+
+function qtMemReset() {
+    qtMem = {};
+    qtStats = { reads: 0, writes: 0, removes: 0, maxWrite: 0, bytes: 0 };
+}
+
+// fresh: bỏ memo, đọc lại từ localStorage (dùng khi chờ lượt khác đang ghi).
+function qtLoad(key, fallback, fresh) {
+    if (!fresh && Object.prototype.hasOwnProperty.call(qtMem, key)) return qtMem[key];
+    var v = fallback;
     try {
+        qtStats.reads++;
         var raw = localStorage.getItem(key);
-        if (raw === null || raw === undefined || raw === "") return fallback;
-        var v = JSON.parse(String(raw));
-        return v && typeof v === "object" ? v : fallback;
-    } catch (e) { return fallback; }
+        if (raw !== null && raw !== undefined && raw !== "" && raw !== "undefined") {
+            var parsed = JSON.parse(String(raw));
+            if (parsed && typeof parsed === "object") v = parsed;
+        }
+    } catch (e) {}
+    qtMem[key] = v;
+    return v;
 }
 
 function qtSave(key, value) {
-    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+    qtMem[key] = value;
+    try {
+        var s = JSON.stringify(value);
+        qtStats.writes++;
+        qtStats.bytes += s.length;
+        if (s.length > qtStats.maxWrite) qtStats.maxWrite = s.length;
+        localStorage.setItem(key, s);
+    } catch (e) {}
+}
+
+function qtRemove(key) {
+    delete qtMem[key];
+    try { qtStats.removes++; localStorage.removeItem(key); } catch (e) {}
 }
 
 function qtHash(text) {
@@ -72,11 +105,19 @@ function qtHash(text) {
     return (h1 >>> 0).toString(36) + (h2 >>> 0).toString(36) + s.length.toString(36);
 }
 
-// ---- dọn mục cũ (một lần; rẻ vì chỉ đọc 2 khoá) ----
+// Cầu localStorage của vBook trả chuỗi "undefined" (không phải null) cho khoá chưa có — kiểm trên vBook 1.0.
+function qtHas(key) {
+    try {
+        var raw = localStorage.getItem(key);
+        return raw !== null && raw !== undefined && raw !== "" && raw !== "undefined";
+    } catch (e) { return false; }
+}
+
+// ---- chuyển dữ liệu bản cũ, dọn khoá cũ (mỗi lượt chỉ tốn 4 getItem khi không còn gì để chuyển) ----
 function purgeLegacyStorage() {
     try {
-        if (localStorage.getItem("qtrans3_context") !== null) localStorage.removeItem("qtrans3_context");
-        var raw = localStorage.getItem("vbook_cache_manifest");
+        if (qtHas("qtrans3_context")) localStorage.removeItem("qtrans3_context");
+        var raw = qtHas("vbook_cache_manifest") ? localStorage.getItem("vbook_cache_manifest") : null;
         if (raw !== null) {
             var manifest = JSON.parse(String(raw)) || [];
             for (var i = 0; i < manifest.length; i++) {
@@ -85,51 +126,84 @@ function purgeLegacyStorage() {
             localStorage.removeItem("vbook_cache_manifest");
         }
     } catch (e) {}
+    try { migrateV19(); } catch (e2) {}
+}
+
+// Sổ truyện cũ tách thành từng truyện (tên chương cắt còn 1.500); recent/chunks cũ chỉ sống 45 phút/6 giờ nên bỏ.
+function migrateV19() {
+    var old = qtLoad(QT3_BOOKS_OLD, null, true);
+    if (old && old.b) {
+        var store = booksLoad();
+        for (var id in old.b) {
+            var bk = old.b[id];
+            if (!bk || store.b[id]) continue;
+            var titles = {}, n = 0;
+            for (var h in (bk.titles || {})) {
+                if (n >= TITLES_PER_BOOK) break;
+                titles[h] = bk.titles[h]; n++;
+            }
+            store.b[id] = { titles: titles, ctx: bk.ctx || null, tails: bk.tails || {}, g: bk.g || null, used: bk.used || qtNow() };
+            store.dirty[id] = true;
+        }
+        if (old.last && !store.last) store.last = old.last;
+        booksSave(store);
+        qtRemove(QT3_BOOKS_OLD);
+    }
+    try {
+        if (qtHas(QT3_RECENT_OLD)) qtRemove(QT3_RECENT_OLD);
+        if (qtHas(QT3_CHUNKS_OLD)) qtRemove(QT3_CHUNKS_OLD);
+    } catch (e) {}
 }
 
 function purgeAllCaches() {
     purgeLegacyStorage();
-    try {
-        localStorage.removeItem(QT3_BOOKS);
-        localStorage.removeItem(QT3_RECENT);
-        localStorage.removeItem(QT3_INFLIGHT);
-        localStorage.removeItem(QT3_LINES);
-        localStorage.removeItem(QT3_CHUNKS);
-    } catch (e) {}
+    var cidx = qtLoad(QT3_CIDX, { items: [] }, true);
+    for (var i = 0; i < cidx.items.length; i++) qtRemove(QT3_ENTRY + cidx.items[i][0]);
+    var bidx = qtLoad(QT3_BIDX, { ids: [] }, true);
+    for (var j = 0; j < (bidx.ids || []).length; j++) qtRemove(QT3_BOOK + bidx.ids[j]);
+    qtRemove(QT3_CIDX);
+    qtRemove(QT3_BIDX);
+    qtRemove(QT3_LINES);
+    qtRemove(QT3_INFLIGHT);
+    qtMem = {};
 }
 
-// ---- bản dịch vừa xong ----
-function recentGet(key) {
-    var store = qtLoad(QT3_RECENT, { items: [] });
-    var now = qtNow();
-    for (var i = 0; i < store.items.length; i++) {
-        var it = store.items[i];
-        if (it.k === key && now - it.t < RECENT_TTL) return it.v;
-    }
-    return null;
+// ---- bản dịch chương / đoạn: mỗi mục một khoá ----
+function entryGet(key) {
+    // Đọc tươi: lượt khác có thể vừa ghi xong (waitForSameRequest thăm dò mục này).
+    var e = qtLoad(QT3_ENTRY + key, null, true);
+    if (!e || typeof e.v !== "string") return null;
+    if (qtNow() - (e.t || 0) > ENTRY_TTL) return null;
+    return e.v;
 }
 
-function recentPut(key, value) {
-    var store = qtLoad(QT3_RECENT, { items: [] });
-    var now = qtNow();
-    var items = [];
-    for (var i = 0; i < store.items.length; i++) {
-        var it = store.items[i];
-        if (it.k !== key && now - it.t < RECENT_TTL) items.push(it);
+function entryPut(key, value) {
+    var v = String(value), now = qtNow();
+    qtSave(QT3_ENTRY + key, { v: v, t: now });
+    var idx = qtLoad(QT3_CIDX, { items: [] }, true);
+    var items = [[key, now, v.length]], total = v.length, seen = {};
+    seen[key] = true;
+    for (var i = 0; i < idx.items.length; i++) {
+        var it = idx.items[i];
+        if (!it || seen[it[0]]) continue;
+        if (now - it[1] > ENTRY_TTL || items.length >= ENTRY_MAX || total + it[2] > ENTRY_CHARS) {
+            qtRemove(QT3_ENTRY + it[0]);
+            continue;
+        }
+        items.push(it); total += it[2]; seen[it[0]] = true;
     }
-    items.unshift({ k: key, v: String(value), t: now });
-    var total = 0, kept = [];
-    for (var j = 0; j < items.length && kept.length < RECENT_MAX; j++) {
-        total += items[j].v.length;
-        if (total > RECENT_CHARS && kept.length > 0) break;
-        kept.push(items[j]);
-    }
-    qtSave(QT3_RECENT, { items: kept });
+    qtSave(QT3_CIDX, { items: items });
 }
+
+// Giữ tên cũ cho translate.js: chương vừa dịch ("r") và từng đoạn ("k") cùng một kho.
+function recentGet(key) { return entryGet("r" + key); }
+function recentPut(key, value) { entryPut("r" + key, value); }
+function chunkGet(key) { return entryGet("k" + key); }
+function chunkPut(key, value) { entryPut("k" + key, value); }
 
 // ---- chống gọi trùng song song ----
 function inflightSet(key, on) {
-    var store = qtLoad(QT3_INFLIGHT, {});
+    var store = qtLoad(QT3_INFLIGHT, {}, true);
     var now = qtNow();
     var next = {};
     for (var k in store) {
@@ -139,9 +213,9 @@ function inflightSet(key, on) {
     qtSave(QT3_INFLIGHT, next);
 }
 
-// Có lượt khác đang dịch đúng nội dung này: chờ kết quả của nó (tối đa 120 giây) thay vì gọi API lần nữa.
+// Có lượt khác đang dịch đúng nội dung này: chờ kết quả của nó thay vì gọi API lần nữa.
 function waitForSameRequest(key) {
-    var store = qtLoad(QT3_INFLIGHT, {});
+    var store = qtLoad(QT3_INFLIGHT, {}, true);
     var started = store[key];
     if (!started || qtNow() - started > INFLIGHT_TTL) return null;
     var deadline = Math.min(qtNow() + INFLIGHT_WAIT, started + INFLIGHT_TTL);
@@ -150,7 +224,7 @@ function waitForSameRequest(key) {
         try { sleep(1500); } catch (e) { return null; }
         var done = recentGet(key);
         if (done !== null) return done;
-        var cur = qtLoad(QT3_INFLIGHT, {})[key];
+        var cur = qtLoad(QT3_INFLIGHT, {}, true)[key];
         if (!cur) return recentGet(key);
     }
     return null;
@@ -159,14 +233,14 @@ function waitForSameRequest(key) {
 // Danh sách (mục lục…): vBook có lúc gửi cùng một danh sách 2–3 lượt cùng lúc. Lượt sau chờ lượt đầu xong (tối đa
 // 40 giây) rồi đọc cache theo dòng, không gọi API lần nữa.
 function waitForSameList(key) {
-    var store = qtLoad(QT3_INFLIGHT, {});
+    var store = qtLoad(QT3_INFLIGHT, {}, true);
     var started = store[key];
     if (!started || qtNow() - started > INFLIGHT_TTL) return;
     try { logStep("chờ lượt danh sách trùng"); } catch (e0) {}
     var deadline = Math.min(qtNow() + INFLIGHT_WAIT, started + INFLIGHT_TTL);
     while (qtNow() < deadline) {
         try { sleep(1000); } catch (e) { return; }
-        if (!qtLoad(QT3_INFLIGHT, {})[key]) return;
+        if (!qtLoad(QT3_INFLIGHT, {}, true)[key]) return;
     }
 }
 
@@ -234,24 +308,37 @@ function looksLikeToc(lines) {
     return nonEmpty >= 5 && hits / nonEmpty >= 0.6;
 }
 
+// Sổ truyện: chỉ mục + mỗi truyện một khoá. Trong một lượt chỉ dựng một lần; booksSave chỉ ghi truyện có sửa (dirty).
 function booksLoad() {
-    var store = qtLoad(QT3_BOOKS, { b: {} });
-    if (!store.b) store.b = {};
+    if (qtMem.__books) return qtMem.__books;
+    var idx = qtLoad(QT3_BIDX, { ids: [], last: null });
+    var store = { b: {}, last: idx.last || null, dirty: {} };
+    var ids = idx.ids || [];
+    for (var i = 0; i < ids.length; i++) {
+        var bk = qtLoad(QT3_BOOK + ids[i], null);
+        if (bk && bk.titles) store.b[ids[i]] = bk;
+    }
+    qtMem.__books = store;
     return store;
 }
 
 function booksSave(store) {
-    var ids = [];
     var now = qtNow();
+    var ids = [];
     for (var id in store.b) {
-        if (now - (store.b[id].used || 0) > BOOK_TTL) delete store.b[id];
+        if (now - (store.b[id].used || 0) > BOOK_TTL) { qtRemove(QT3_BOOK + id); delete store.b[id]; }
         else ids.push(id);
     }
     if (ids.length > BOOKS_MAX) {
         ids.sort(function(a, b) { return (store.b[a].used || 0) - (store.b[b].used || 0); });
-        for (var i = 0; i < ids.length - BOOKS_MAX; i++) delete store.b[ids[i]];
+        var drop = ids.splice(0, ids.length - BOOKS_MAX);
+        for (var d = 0; d < drop.length; d++) { qtRemove(QT3_BOOK + drop[d]); delete store.b[drop[d]]; }
     }
-    qtSave(QT3_BOOKS, store);
+    for (var k in store.dirty) {
+        if (store.b[k]) qtSave(QT3_BOOK + k, store.b[k]);
+    }
+    store.dirty = {};
+    qtSave(QT3_BIDX, { ids: ids, last: store.last || null });
 }
 
 // Mục lục vBook gửi dịch (một hoặc nhiều lượt): ghi tên chương → số chương cho truyện chứa nó.
@@ -284,6 +371,7 @@ function registerToc(lines) {
     }
     book.used = qtNow();
     store.b[bookId] = book;
+    store.dirty[bookId] = true;
     store.last = { id: bookId, at: qtNow() };
     booksSave(store);
     return bookId;
@@ -329,12 +417,12 @@ function findBookForChapter(text) {
     return { id: last.id, num: null, guessed: true };
 }
 
-// Truyện vừa được dùng: mục lục đi qua hoặc chương nhận ra được. Dùng để đoán khi chương không mang tên chương.
+// Truyện vừa được dùng: chỉ đổi chỉ mục, không ghi lại truyện nào. Nếu lượt này còn ghi đuôi/điểm thì booksSave sau
+// đó ghi luôn một thể.
 function rememberBook(id) {
     var store = booksLoad();
     if (!store.b[id]) return;
     store.last = { id: id, at: qtNow() };
-    booksSave(store);
 }
 
 function bookContextGet(ref) {
@@ -351,6 +439,8 @@ function bookContextGet(ref) {
         tail = String(tails[String(ref.num - 1)] || "");
         // Bản ≤ 15 chỉ có một ô ctx; đọc nốt cho lần đầu sau khi cập nhật.
         if (!tail && ctx && ctx.num !== null && ctx.num === ref.num - 1) tail = String(ctx.tail || "");
+        // Lượt liền trước là lượt đoán (không biết số chương) và vừa xong: coi như chương kề trước.
+        if (!tail && ctx && ctx.num === null && qtNow() - (ctx.at || 0) < CHAIN_TTL) tail = String(ctx.tail || "");
     } else if (ctx && qtNow() - (ctx.at || 0) < CHAIN_TTL) {
         // Không biết số chương (nguồn không lặp tên chương): nối đuôi của lượt ngay trước nếu vừa mới dịch.
         tail = String(ctx.tail || "");
@@ -379,6 +469,7 @@ function bookContextPut(ref, translated, glossary) {
     }
     book.ctx = { tail: tail, glossary: glossary, num: ref.num === undefined ? null : ref.num, gv: 2, at: qtNow() };
     book.used = qtNow();
+    store.dirty[ref.id] = true;
     store.last = { id: ref.id, at: qtNow() };
     booksSave(store);
 }
@@ -386,6 +477,7 @@ function bookContextPut(ref, translated, glossary) {
 // ---- thể loại truyện (chọn văn phong tự động) ----
 // Điểm thể loại cộng dồn qua từng chương của cùng truyện: một chương lạc đề không đổi được văn phong của cả bộ,
 // và càng đọc thì càng chắc. Không có truyện (chưa gặp mục lục) thì chỉ dùng điểm của chương đang dịch.
+// Chỉ cộng vào bản trong bộ nhớ; bookContextPut ở cuối lượt ghi luôn (lượt bị ngắt thì mất điểm của chương đó, chấp nhận).
 function genreRemember(ref, scores) {
     if (!ref) return scores;
     var store = booksLoad();
@@ -399,33 +491,9 @@ function genreRemember(ref, scores) {
     if (sum > 2000) { for (var k3 in total) total[k3] = Math.round(total[k3] / 2); }
     book.g = total;
     book.used = qtNow();
-    booksSave(store);
+    store.dirty[ref.id] = true;
+    if (ref.num === null && ref.guessed !== true) booksSave(store); // mục lục: không có bookContextPut theo sau
     return total;
-}
-
-// ---- từng đoạn chương ----
-function chunkGet(key) {
-    var store = qtLoad(QT3_CHUNKS, { items: [] });
-    var now = qtNow();
-    for (var i = 0; i < store.items.length; i++) {
-        if (store.items[i].k === key && now - store.items[i].t < CHUNKS_TTL) return store.items[i].v;
-    }
-    return null;
-}
-
-function chunkPut(key, value) {
-    var store = qtLoad(QT3_CHUNKS, { items: [] });
-    var now = qtNow();
-    var items = [{ k: key, v: String(value), t: now }];
-    var total = items[0].v.length;
-    for (var i = 0; i < store.items.length && items.length < CHUNKS_MAX; i++) {
-        var it = store.items[i];
-        if (it.k === key || now - it.t >= CHUNKS_TTL) continue;
-        total += it.v.length;
-        if (total > CHUNKS_CHARS) break;
-        items.push(it);
-    }
-    qtSave(QT3_CHUNKS, { items: items });
 }
 
 // ---- nhật ký ----
@@ -435,7 +503,7 @@ var logStartedAt = 0;
 function logStart(extra, length) {
     logStartedAt = qtNow();
     logId = logStartedAt.toString(36);
-    var store = qtLoad(QT3_LOG, { items: [] });
+    var store = qtLoad(QT3_LOG, { items: [] }, true);
     store.items.unshift({ id: logId, at: new Date(logStartedAt).toISOString(), extra: String(extra), len: length, step: "bắt đầu", s: 0 });
     store.items = store.items.slice(0, LOG_MAX);
     qtSave(QT3_LOG, store);
@@ -443,7 +511,7 @@ function logStart(extra, length) {
 
 function logStep(step) {
     if (!logId) return;
-    var store = qtLoad(QT3_LOG, { items: [] });
+    var store = qtLoad(QT3_LOG, { items: [] }, true);
     for (var i = 0; i < store.items.length; i++) {
         if (store.items[i].id === logId) {
             store.items[i].step = String(step).substring(0, 200);

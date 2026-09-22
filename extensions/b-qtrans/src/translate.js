@@ -512,6 +512,8 @@ function execute(text, from, to, extra) {
     lastTranslation = null;
     lastBookInfo = null;
     listCacheInfo = null;
+    // Memo đọc/ghi và bộ đếm của cache.js tính theo từng lượt.
+    if (typeof qtMemReset === "function") qtMemReset();
     // Ghi ngay lúc bắt đầu: phân biệt "vBook không gọi" với "tiện ích treo giữa chừng".
     try { localStorage.setItem("qtrans3_last_start", JSON.stringify({ time: info.time, from: info.from, to: info.to, extra: info.extra, length: info.length })); } catch (e0) {}
     try { logStart(info.extra, info.length); } catch (e1) {}
@@ -570,6 +572,8 @@ function execute(text, from, to, extra) {
         lastErrorMessage = "Ngoại lệ: " + e;
         return fail("Q-trans 3 lỗi: " + e);
     } finally {
+        // Số lần đọc/ghi localStorage và cục ghi lớn nhất của lượt này — để nghiệm thu tải bộ nhớ trên máy thật.
+        try { if (typeof qtStats === "object") info.storage = { reads: qtStats.reads, writes: qtStats.writes, removes: qtStats.removes, maxWrite: qtStats.maxWrite, bytes: qtStats.bytes }; } catch (e4) {}
         try { localStorage.setItem("qtrans3_last_call", JSON.stringify(info)); } catch (e2) {}
         try { logStep(info.error ? "lỗi: " + info.error : (info.exception ? "ngoại lệ: " + info.exception : "xong" + (info.model ? " (" + info.model + ")" : ""))); } catch (e3) {}
     }
@@ -837,7 +841,8 @@ function translateText(text, from, to) {
                 
                 if (chunkResult.status === 'success') {
                     finalParts.push(chunkResult.data);
-                    if (chunkKey) chunkPut(chunkKey, chunkResult.data);
+                    // Chương một đoạn thì recentPut ở cuối đã đủ; lưu đoạn chỉ để cứu chương nhiều đoạn bị ngắt giữa chừng.
+                    if (chunkKey && textChunks.length > 1) chunkPut(chunkKey, chunkResult.data);
                     logStep("đoạn " + (k + 1) + "/" + textChunks.length + " xong");
                 } else {
                     errorLog[currentModel] = chunkResult.details;
