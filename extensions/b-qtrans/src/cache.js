@@ -1,4 +1,4 @@
-// Bộ nhớ của Q-trans 3 (bản 19). Mọi mục đều có giới hạn; người dùng xoá bằng tay ở trang tiện ích › Bộ nhớ cục bộ.
+// Bộ nhớ của Q-trans 3 (bản 19, chẩn đoán bản 20). Mọi mục đều có giới hạn; người dùng xoá bằng tay ở trang tiện ích › Bộ nhớ cục bộ.
 //
 // Bản ≤ 18 gom mọi thứ vào vài cục JSON lớn (sổ truyện ~690k, mục lục ~440k, chương/đoạn 150k mỗi cục) và mỗi lượt
 // dịch một chương parse cục sổ truyện 5 lần, ghi lại 3 lần: ~4 MB parse + ~2,3 MB ghi cho MỘT chương. Trên iPhone
@@ -168,12 +168,49 @@ function purgeAllCaches() {
     qtMem = {};
 }
 
+// ---- chẩn đoán gửi kèm header x-qtrans-diag của request (Cedric ghi header vào log). Trên iPhone không có
+// cách nào khác đọc localStorage của tiện ích; đây là kênh duy nhất để biết bộ nhớ có giữ được giữa các lượt không.
+var QT3_PROBE = "qtrans3_probe";
+var QT3_VERSION = 20;
+var qtDiag = { n: 0, prev: -1, wr: "?", miss: "" };
+
+// Ghi dấu lượt rồi đọc lại ngay (wr) và đo tuổi dấu của lượt trước (prev, giây): prev luôn -1 nghĩa là ghi không
+// giữ được sang lượt sau.
+function qtProbe() {
+    var now = qtNow();
+    var prev = qtLoad(QT3_PROBE, null, true);
+    qtDiag.prev = prev && prev.t ? Math.round((now - prev.t) / 1000) : -1;
+    qtDiag.n = prev && prev.n ? prev.n + 1 : 1;
+    qtDiag.miss = "";
+    qtSave(QT3_PROBE, { t: now, n: qtDiag.n });
+    var back = qtLoad(QT3_PROBE, null, true);
+    qtDiag.wr = back && back.t === now ? "ok" : "bad";
+}
+
+function qtDiagString() {
+    var out = "v" + QT3_VERSION + " n=" + qtDiag.n + " prev=" + qtDiag.prev + " wr=" + qtDiag.wr + " miss=" + (qtDiag.miss || "-");
+    try {
+        var cidx = qtLoad(QT3_CIDX, { items: [] }), bidx = qtLoad(QT3_BIDX, { ids: [] });
+        var total = 0;
+        for (var i = 0; i < cidx.items.length; i++) total += cidx.items[i][2] || 0;
+        out += " c=" + cidx.items.length + "/" + total + " b=" + (bidx.ids || []).length;
+        // Danh sách dòng chỉ đếm khi lượt này đã nạp (đường chương không nạp nó).
+        if (Object.prototype.hasOwnProperty.call(qtMem, QT3_LINES)) {
+            var lc = 0;
+            for (var k in (qtMem[QT3_LINES].m || {})) lc++;
+            out += " l=" + lc;
+        }
+    } catch (e) {}
+    return out + " r=" + qtStats.reads + " w=" + qtStats.writes;
+}
+
 // ---- bản dịch chương / đoạn: mỗi mục một khoá ----
 function entryGet(key) {
     // Đọc tươi: lượt khác có thể vừa ghi xong (waitForSameRequest thăm dò mục này).
     var e = qtLoad(QT3_ENTRY + key, null, true);
-    if (!e || typeof e.v !== "string") return null;
-    if (qtNow() - (e.t || 0) > ENTRY_TTL) return null;
+    if (!e || typeof e.v !== "string") { qtDiag.miss = qtDiag.miss || "none"; return null; }
+    if (qtNow() - (e.t || 0) > ENTRY_TTL) { qtDiag.miss = "exp"; return null; }
+    qtDiag.miss = "hit";
     return e.v;
 }
 
@@ -218,6 +255,7 @@ function waitForSameRequest(key) {
     var store = qtLoad(QT3_INFLIGHT, {}, true);
     var started = store[key];
     if (!started || qtNow() - started > INFLIGHT_TTL) return null;
+    qtDiag.miss = "wait";
     var deadline = Math.min(qtNow() + INFLIGHT_WAIT, started + INFLIGHT_TTL);
     try { logStep("chờ lượt trùng đang dịch"); } catch (e0) {}
     while (qtNow() < deadline) {

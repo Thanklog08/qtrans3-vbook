@@ -305,7 +305,7 @@ function callGeminiAPI(text, prompt, apiKey, model) {
         "stream": false
     };
     try {
-        var response = fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey }, body: JSON.stringify(body) });
+        var response = fetch(url, { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + apiKey, "X-Qtrans-Diag": (typeof qtDiagString === "function" ? qtDiagString() : "") }, body: JSON.stringify(body) });
         var responseText = response.text() || "";
 
         if (response.ok) {
@@ -514,6 +514,7 @@ function execute(text, from, to, extra) {
     listCacheInfo = null;
     // Memo đọc/ghi và bộ đếm của cache.js tính theo từng lượt.
     if (typeof qtMemReset === "function") qtMemReset();
+        if (typeof qtProbe === "function") { try { qtProbe(); } catch (eProbe) {} }
     // Ghi ngay lúc bắt đầu: phân biệt "vBook không gọi" với "tiện ích treo giữa chừng".
     try { localStorage.setItem("qtrans3_last_start", JSON.stringify({ time: info.time, from: info.from, to: info.to, extra: info.extra, length: info.length })); } catch (e0) {}
     try { logStart(info.extra, info.length); } catch (e1) {}
