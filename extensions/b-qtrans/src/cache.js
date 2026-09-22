@@ -40,6 +40,11 @@ var GLOSSARY_MAX = 150;
 // xong thường không phải chương người đọc mở kế tiếp (bản ≤ 15 để ctx đứng ở chương cuối của lượt tải trước,
 // chương đọc thật không khớp num-1 nên mất sạch đuôi).
 var TAILS_MAX = 12;
+// Đoán truyện theo lượt gần nhất (bản 18): mục lục/chương của truyện đó phải mới đi qua trong 30 phút.
+var LAST_BOOK_TTL = 30 * 60 * 1000;
+// Không biết số chương thì chỉ nối đuôi khi chương trước của truyện đó vừa dịch xong trong 15 phút — tức đang
+// đọc/dịch tuần tự. Lâu hơn thì chỉ gửi bảng tên, không gửi đuôi có thể đã cách vài chương.
+var CHAIN_TTL = 15 * 60 * 1000;
 
 function qtNow() { return new Date().getTime(); }
 
@@ -279,25 +284,57 @@ function registerToc(lines) {
     }
     book.used = qtNow();
     store.b[bookId] = book;
+    store.last = { id: bookId, at: qtNow() };
     booksSave(store);
     return bookId;
 }
 
-// Chương đang dịch thuộc truyện nào: tra dòng tiêu đề (dòng đầu không rỗng) trong các mục lục đã ghi.
+// Nguồn nào cũng có thể không lặp tên chương ở đầu nội dung (đã gặp: chương mở thẳng bằng câu văn). Khi đó
+// không tra được tên trong mục lục, và cũng không biết số chương. Bản ≤ 17 bỏ luôn ngữ cảnh; bản 18 đoán theo
+// truyện vừa có mục lục/chương đi qua, kèm hai rào: hết hạn sau LAST_BOOK_TTL và chương phải có ít nhất một tên
+// riêng của truyện đó (sổ tên chương trước) để không nối nhầm sang truyện khác đang đọc song song.
+function looksLikeSameBook(book, text) {
+    var glossary = book && book.ctx && book.ctx.gv === 2 ? book.ctx.glossary : null;
+    if (!glossary) return true;
+    var seen = 0;
+    for (var k in glossary) {
+        seen++;
+        if (String(text).indexOf(k) > -1) return true;
+    }
+    return seen === 0;
+}
+
+// Chương đang dịch thuộc truyện nào: tra tiêu đề trong 5 dòng đầu; không thấy thì đoán theo truyện gần nhất.
 function findBookForChapter(text) {
     var lines = String(text).split("\n");
-    var first = "";
-    for (var i = 0; i < lines.length && i < 5; i++) {
-        if (lines[i].trim()) { first = lines[i].trim(); break; }
+    var heads = [];
+    for (var i = 0; i < lines.length && heads.length < 5; i++) {
+        if (lines[i].trim()) heads.push(lines[i].trim());
     }
-    if (!first) return null;
-    var h = qtHash(normTitle(first));
     var store = booksLoad();
-    for (var id in store.b) {
-        var titles = store.b[id].titles || {};
-        if (titles[h] !== undefined) return { id: id, num: chapterNumber(first) !== null ? chapterNumber(first) : titles[h] };
+    for (var p = 0; p < heads.length; p++) {
+        var h = qtHash(normTitle(heads[p]));
+        for (var id in store.b) {
+            var titles = store.b[id].titles || {};
+            if (titles[h] === undefined) continue;
+            var num = chapterNumber(heads[p]);
+            rememberBook(id);
+            return { id: id, num: num !== null ? num : titles[h] };
+        }
     }
-    return null;
+    var last = store.last;
+    if (!last || !store.b[last.id] || qtNow() - (last.at || 0) > LAST_BOOK_TTL) return null;
+    if (!looksLikeSameBook(store.b[last.id], text)) return null;
+    rememberBook(last.id);
+    return { id: last.id, num: null, guessed: true };
+}
+
+// Truyện vừa được dùng: mục lục đi qua hoặc chương nhận ra được. Dùng để đoán khi chương không mang tên chương.
+function rememberBook(id) {
+    var store = booksLoad();
+    if (!store.b[id]) return;
+    store.last = { id: id, at: qtNow() };
+    booksSave(store);
 }
 
 function bookContextGet(ref) {
@@ -312,9 +349,12 @@ function bookContextGet(ref) {
     if (ref.num !== null && ref.num !== undefined) {
         var tails = book.tails || {};
         tail = String(tails[String(ref.num - 1)] || "");
+        // Bản ≤ 15 chỉ có một ô ctx; đọc nốt cho lần đầu sau khi cập nhật.
+        if (!tail && ctx && ctx.num !== null && ctx.num === ref.num - 1) tail = String(ctx.tail || "");
+    } else if (ctx && qtNow() - (ctx.at || 0) < CHAIN_TTL) {
+        // Không biết số chương (nguồn không lặp tên chương): nối đuôi của lượt ngay trước nếu vừa mới dịch.
+        tail = String(ctx.tail || "");
     }
-    // Bản ≤ 15 chỉ có một ô ctx; đọc nốt cho lần đầu sau khi cập nhật.
-    if (!tail && ctx && ctx.num !== null && ref.num !== null && ctx.num === ref.num - 1) tail = String(ctx.tail || "");
     return { tail: tail, glossary: glossary, tailUsed: tail !== "" };
 }
 
@@ -337,8 +377,9 @@ function bookContextPut(ref, translated, glossary) {
             for (var d = 0; d < nums.length - TAILS_MAX; d++) delete book.tails[String(nums[d])];
         }
     }
-    book.ctx = { tail: tail, glossary: glossary, num: ref.num, gv: 2 };
+    book.ctx = { tail: tail, glossary: glossary, num: ref.num === undefined ? null : ref.num, gv: 2, at: qtNow() };
     book.used = qtNow();
+    store.last = { id: ref.id, at: qtNow() };
     booksSave(store);
 }
 
