@@ -3,7 +3,7 @@
     "id": "b-qtrans",
     "name": "B-Qtrans",
     "author": "BBook",
-    "version": 19,
+    "version": 20,
     "source": "http://127.0.0.1:8317",
     "regexp": "",
     "description": "Dịch truyện bằng Gemini qua proxy Cedric Web (API chuẩn OpenAI). Nhập địa chỉ, khoá, model và prompt trong cài đặt.",
