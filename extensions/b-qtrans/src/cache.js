@@ -52,6 +52,26 @@ var TAILS_MAX = 12;
 var LAST_BOOK_TTL = 30 * 60 * 1000;
 // Không biết số chương thì chỉ nối đuôi khi chương trước của truyện đó vừa dịch xong trong 15 phút.
 var CHAIN_TTL = 15 * 60 * 1000;
+// Bản 22: nhận truyện bằng tên lặp qua nhiều chương của CHÍNH truyện đó. Bảng tên QT (glossary) đầy từ chung
+// (地球, 电视, 凌晨, 穿越, 皇帝…) nên chương nào cũng "trúng tên" truyện khác — log iPhone 23/9: mở mục lục truyện võ
+// hiệp lúc 13:44Z là 55/62 chương đô thị kế tiếp bị gán sang nó và nhận văn phong cổ trang. Mỗi truyện giữ bộ tên
+// có mặt trong NAME_RING chương gần nhất; tên "then chốt" = xuất hiện ở ≥ NAME_MIN_CHAPTERS chương.
+var NAME_RING = 12;
+var NAME_MIN_CHAPTERS = 3;
+var NAMES_PER_CHAPTER = 40;
+// Điểm thể loại của mục lục ép về cỡ một chương: mục lục 500 tên chương (≈ 60 điểm) từng át mọi chương của truyện,
+// nhất là truyện mà chương không lặp tên chương nên không bao giờ cộng dồn được.
+var TOC_SCORE_MAX = 12;
+// Sổ truyện lên bản 22 thì xoá điểm thể loại cũ: bản 18–20 cộng cả chương đoán nhầm truyện vào (truyện võ hiệp
+// 林风 vẫn nhận văn phong hiện đại ở bản 21 vì điểm đô thị nhiễm từ trước).
+var BOOKS_SCHEMA = 22;
+// Tên + giới thiệu truyện: vBook gửi dịch ngay trước mục lục (log 22–23/9: "全职艺术家 / 怀揣系统…", "武侠：最强肉身…").
+// Giữ tạm INTRO_TTL để gắn vào truyện khi mục lục tới. Thể loại của truyện CHỐT một lần khi mục lục + giới thiệu đủ
+// điểm, hoặc khi điểm chương cộng dồn đủ rõ (genreDecide); chương sau chỉ tra, không chấm lại (yêu cầu người dùng 23/9).
+var QT3_INTRO = "qtrans3_intro";
+var INTRO_TTL = 3 * 60 * 1000;
+var GENRE_LOCK_MIN = 8;
+var GENRE_LOCK_SUM_MAX = 60;
 
 function qtNow() { return new Date().getTime(); }
 
@@ -167,14 +187,15 @@ function purgeAllCaches() {
     qtRemove(QT3_BIDX);
     qtRemove(QT3_LINES);
     qtRemove(QT3_INFLIGHT);
+    qtRemove(QT3_INTRO);
     qtMem = {};
 }
 
 // ---- chẩn đoán gửi kèm header x-qtrans-diag của request (Cedric ghi header vào log). Trên iPhone không có
 // cách nào khác đọc localStorage của tiện ích; đây là kênh duy nhất để biết bộ nhớ có giữ được giữa các lượt không.
 var QT3_PROBE = "qtrans3_probe";
-var QT3_VERSION = 21;
-var qtDiag = { n: 0, prev: -1, wr: "?", miss: "" };
+var QT3_VERSION = 22;
+var qtDiag = { n: 0, prev: -1, wr: "?", miss: "", bk: "" };
 
 // Ghi dấu lượt rồi đọc lại ngay (wr) và đo tuổi dấu của lượt trước (prev, giây): prev luôn -1 nghĩa là ghi không
 // giữ được sang lượt sau.
@@ -184,6 +205,7 @@ function qtProbe() {
     qtDiag.prev = prev && prev.t ? Math.round((now - prev.t) / 1000) : -1;
     qtDiag.n = prev && prev.n ? prev.n + 1 : 1;
     qtDiag.miss = "";
+    qtDiag.bk = "";
     qtSave(QT3_PROBE, { t: now, n: qtDiag.n });
     var back = qtLoad(QT3_PROBE, null, true);
     qtDiag.wr = back && back.t === now ? "ok" : "bad";
@@ -203,7 +225,9 @@ function qtDiagString() {
             out += " l=" + lc;
         }
     } catch (e) {}
-    return out + " r=" + qtStats.reads + " w=" + qtStats.writes;
+    // bk: truyện được nhận (5 ký tự id) và cách nhận (ten/chac/doan/none); g: văn phong auto đã chọn.
+    var genre = typeof lastGenre !== "undefined" && lastGenre ? String(lastGenre.chon).replace("vi_", "") + (lastGenre.khoa ? "!" : "") : "-";
+    return out + " r=" + qtStats.reads + " w=" + qtStats.writes + " bk=" + (qtDiag.bk || "-") + " g=" + genre;
 }
 
 // ---- bản dịch chương / đoạn: mỗi mục một khoá ----
@@ -359,6 +383,10 @@ function booksLoad() {
         if (bk && bk.titles) store.b[ids[i]] = bk;
     }
     qtMem.__books = store;
+    if ((idx.v || 0) < BOOKS_SCHEMA) {
+        for (var m in store.b) { delete store.b[m].g; store.dirty[m] = true; }
+        booksSave(store);
+    }
     return store;
 }
 
@@ -378,7 +406,7 @@ function booksSave(store) {
         if (store.b[k]) qtSave(QT3_BOOK + k, store.b[k]);
     }
     store.dirty = {};
-    qtSave(QT3_BIDX, { ids: ids, last: store.last || null });
+    qtSave(QT3_BIDX, { ids: ids, last: store.last || null, v: BOOKS_SCHEMA });
 }
 
 // Mục lục vBook gửi dịch (một hoặc nhiều lượt): ghi tên chương → số chương cho truyện chứa nó.
@@ -403,6 +431,7 @@ function registerToc(lines) {
     }
     if (!bookId) bookId = "b" + entries[0][0].substring(0, 10);
     var book = store.b[bookId] || { titles: {}, ctx: null };
+    try { introAttach(book); } catch (eI) {}
     var count = 0;
     for (var t2 in book.titles) count++;
     for (var k = 0; k < entries.length && count < TITLES_PER_BOOK; k++) {
@@ -432,29 +461,120 @@ function bookNameHits(book, text) {
     return { hits: hits, known: seen > 0 };
 }
 
-// Bản 18 chỉ xét truyện dùng gần nhất: đọc hai truyện song song (iPhone 22/9: dịch hàng loạt võ hiệp trong lúc đọc
-// đô thị) thì chương bị gán sang truyện kia — kéo theo văn phong, bảng tên và đuôi ngữ cảnh sai. Bản 21 chấm mọi
-// truyện vừa dùng theo số tên riêng có mặt trong chương và chỉ chọn khi một truyện trội hẳn.
+// Tên nhân vật lấy thẳng từ chữ: họ phổ biến + 1 chữ, lặp ≥ NAME_MIN_HITS lần trong chương (nhân vật chính xuất hiện
+// hàng chục lần). Không trông vào từ điển Name của QT: trên máy ảo 23/9 từ điển không có 林渊 nên sau 3 chương bộ tên
+// của 全职艺术家 chỉ có 楚狂/鲁阳 và chương kế bị gán sang truyện võ hiệp vừa mở.
+var NAME_MIN_HITS = 4;
+var SURNAMES = "王李张刘陈杨黄赵吴周徐孙马朱胡郭何高林罗郑梁谢宋唐许韩冯邓曹彭曾萧田董袁潘于蒋蔡余杜叶程苏魏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦付方白邹孟熊秦邱江尹薛闫段雷侯龙史陶黎贺顾毛郝龚邵万钱严覃武戴莫孔向汤楚蓝叶洛柳慕容欧阳司徒上官诸葛南宫东方独孤令狐宇文长孙凌沐夜云风花月墨白苏叶秦楚";
+var NAME_STOP = "的了是在和与也都就不有我你他她它们说道着过上下来去到把被给对从向里中后前时人个这那之而以为又才很更最还但却并及因所么呢吧啊哦嗯没会能要将让使被等";
+function textNameCandidates(text) {
+    var s = String(text), count = {}, out = [];
+    for (var i = 0; i + 1 < s.length; i++) {
+        var c1 = s.charCodeAt(i), c2 = s.charCodeAt(i + 1);
+        if (c1 < 0x4e00 || c1 > 0x9fff || c2 < 0x4e00 || c2 > 0x9fff) continue;
+        var a = s.charAt(i), b = s.charAt(i + 1);
+        if (SURNAMES.indexOf(a) < 0 || NAME_STOP.indexOf(b) > -1 || NAME_STOP.indexOf(a) > -1) continue;
+        var w = a + b;
+        count[w] = (count[w] || 0) + 1;
+    }
+    for (var k in count) { if (count[k] >= NAME_MIN_HITS) out.push([k, count[k]]); }
+    out.sort(function(x, y) { return y[1] - x[1]; });
+    var names = [];
+    for (var j = 0; j < out.length && j < 15; j++) names.push(out[j][0]);
+    return names;
+}
+
+// Bộ tên của NAME_RING chương gần nhất: mỗi chương một mục {h: hash đầu chương, n: [tên]} — tên lấy từ chữ trước, rồi
+// tên trong bảng tên (QT) có mặt trong chương.
+function nameRingPush(book, glossary, source) {
+    var strong = textNameCandidates(source);
+    var present = strong.slice();
+    for (var k in glossary) {
+        if (present.length >= NAMES_PER_CHAPTER) break;
+        if (k.length >= 2 && source.indexOf(k) > -1 && present.indexOf(k) < 0) present.push(k);
+    }
+    if (present.length === 0) return;
+    var ring = book.nr || [];
+    // Cùng chương dịch lại (lượt song song/thử lại trên iPhone) nhận ra bằng hash 200 ký tự đầu: gộp, không đếm hai lần.
+    var h = qtHash(String(source).substring(0, 200));
+    for (var r = 0; r < ring.length; r++) {
+        if (ring[r].h !== h) continue;
+        for (var i = 0; i < present.length; i++) {
+            if (ring[r].n.indexOf(present[i]) < 0 && ring[r].n.length < NAMES_PER_CHAPTER) ring[r].n.push(present[i]);
+        }
+        for (var i2 = 0; i2 < strong.length; i2++) { if ((ring[r].t || []).indexOf(strong[i2]) < 0) { ring[r].t = ring[r].t || []; ring[r].t.push(strong[i2]); } }
+        book.nr = ring;
+        return;
+    }
+    ring.push({ h: h, n: present, t: strong });
+    if (ring.length > NAME_RING) ring.splice(0, ring.length - NAME_RING);
+    book.nr = ring;
+}
+
+// Tên then chốt của truyện: có mặt ở ≥ NAME_MIN_CHAPTERS chương và ≥ 60% số chương trong bộ (mới có 2 chương thì phải ở
+// cả hai). Tên lấy từ chữ (nhân vật lặp nhiều lần) nặng 1; tên chỉ đến từ bảng tên QT (hay là từ chung: 皇帝, 地球) nặng 0,5.
+function bookKeyNames(book) {
+    var ring = (book && book.nr) || [];
+    var count = {}, strong = {}, out = {};
+    for (var i = 0; i < ring.length; i++) {
+        var names = ring[i].n || [], t = ring[i].t || [];
+        for (var j = 0; j < names.length; j++) count[names[j]] = (count[names[j]] || 0) + 1;
+        for (var j2 = 0; j2 < t.length; j2++) strong[t[j2]] = (strong[t[j2]] || 0) + 1;
+    }
+    var need = ring.length >= NAME_MIN_CHAPTERS ? Math.max(NAME_MIN_CHAPTERS, Math.ceil(ring.length * 0.6)) : (ring.length >= 2 ? ring.length : 0);
+    if (need === 0) return out;
+    for (var k in count) { if (count[k] >= need) out[k] = (strong[k] || 0) >= need ? 1 : 0.5; }
+    return out;
+}
+
+// Bản 18 chỉ xét truyện dùng gần nhất; bản 21 chấm theo bảng tên QT — cả hai đều gán nhầm khi đọc hai truyện
+// song song (xem ghi chú đầu file). Bản 22: chấm mọi truyện vừa dùng theo số tên THEN CHỐT của nó có trong chương,
+// tên thuộc bộ của ≥ 2 truyện là từ chung và không tính cho ai. Truyện vừa mở chưa có bộ tên chỉ nhận chương khi
+// không truyện nào khác trúng tên và nó là lượt gần nhất. Trả {id, sure}: sure = trội hẳn, được cộng điểm thể loại.
 function guessBook(store, text) {
     var last = store.last;
     if (!last || !store.b[last.id] || qtNow() - (last.at || 0) > LAST_BOOK_TTL) return null;
-    var best = null, second = 0, candidates = 0;
+    var s = String(text);
+    var cands = [];
     for (var id in store.b) {
         var book = store.b[id];
         if (qtNow() - (book.used || 0) > LAST_BOOK_TTL && id !== last.id) continue;
-        candidates++;
-        var r = bookNameHits(book, text);
-        var score = r.known ? r.hits : 0;
-        if (!best || score > best.score) { second = best ? best.score : 0; best = { id: id, score: score, known: r.known }; }
-        else if (score > second) second = score;
+        var keys = bookKeyNames(book), hasKeys = false;
+        for (var kk in keys) { hasKeys = true; break; }
+        cands.push({ id: id, book: book, keys: keys, hasKeys: hasKeys, score: 0 });
+    }
+    var owners = {};
+    for (var c = 0; c < cands.length; c++) { for (var k in cands[c].keys) owners[k] = (owners[k] || 0) + 1; }
+    var best = null, second = null;
+    for (var c2 = 0; c2 < cands.length; c2++) {
+        var cand = cands[c2];
+        for (var k2 in cand.keys) { if (owners[k2] === 1 && s.indexOf(k2) > -1) cand.score += cand.keys[k2]; }
+        if (!best || cand.score > best.score) { second = best; best = cand; }
+        else if (!second || cand.score > second.score) second = cand;
     }
     if (!best) return null;
-    if (candidates === 1) {
-        // Chỉ một truyện đang đọc: như bản 18, cần ít nhất một tên riêng khi truyện đã có bảng tên.
-        return (!best.known || best.score >= 1) ? best.id : null;
+    var secondScore = second ? second.score : 0;
+    // Trội hẳn: gấp đôi truyện nhì hoặc hơn 3 điểm; "chắc" (được cộng điểm thể loại) từ 2,5 điểm khi gấp ba hoặc hơn 4.
+    if (best.score >= 2 && (best.score >= 2 * secondScore || best.score - secondScore >= 3)) {
+        return { id: best.id, sure: best.score >= 2.5 && (best.score >= 3 * secondScore || best.score - secondScore >= 4) };
     }
-    if (best.score >= 2 && best.score >= 2 * second) return best.id;
-    return null;
+    // Trúng một tên mà truyện khác không trúng tên nào: nhận nhưng chưa chắc (truyện mới bộ tên còn mỏng).
+    if (best.score >= 1 && secondScore === 0) return { id: best.id, sure: false };
+    if (best.score >= 1) return null;
+    // Dưới 1 điểm (chỉ trúng từ chung nửa điểm) coi như không trúng.
+    // Không truyện nào trúng tên then chốt. Truyện vừa mở chưa có bộ tên (nguồn không lặp tên chương) thì nhận để bắt
+    // đầu học: ưu tiên truyện có bảng tên thường trúng chương, rồi truyện dùng gần nhất; truyện đã có bảng tên mà
+    // không trúng chữ nào thì không nhận.
+    var pick = null;
+    for (var c3 = 0; c3 < cands.length; c3++) {
+        var cand2 = cands[c3];
+        if (cand2.hasKeys) continue;
+        var r = bookNameHits(cand2.book, s);
+        var rank = r.known ? (r.hits >= 1 ? 2 : 0) : 1;
+        if (rank === 0) continue;
+        if (!pick || rank > pick.rank || (rank === pick.rank && (cand2.book.used || 0) > (pick.used || 0))) pick = { id: cand2.id, rank: rank, used: cand2.book.used || 0 };
+    }
+    return pick ? { id: pick.id, sure: false } : null;
 }
 
 // Chương đang dịch thuộc truyện nào: tra tiêu đề trong 5 dòng đầu; không thấy thì đoán theo truyện gần nhất.
@@ -472,13 +592,15 @@ function findBookForChapter(text) {
             if (titles[h] === undefined) continue;
             var num = chapterNumber(heads[p]);
             rememberBook(id);
+            qtDiag.bk = id.substring(1, 6) + ":ten";
             return { id: id, num: num !== null ? num : titles[h] };
         }
     }
     var guessed = guessBook(store, text);
+    qtDiag.bk = guessed ? guessed.id.substring(1, 6) + (guessed.sure ? ":chac" : ":doan") : "none";
     if (!guessed) return null;
-    rememberBook(guessed);
-    return { id: guessed, num: null, guessed: true };
+    rememberBook(guessed.id);
+    return { id: guessed.id, num: null, guessed: true, sure: guessed.sure === true };
 }
 
 // Truyện vừa được dùng: chỉ đổi chỉ mục, không ghi lại truyện nào. Nếu lượt này còn ghi đuôi/điểm thì booksSave sau
@@ -604,6 +726,7 @@ function bookContextPut(ref, translated, glossary, source) {
     var keys = [];
     for (var k in glossary) keys.push(k);
     for (var i = 0; i < keys.length - GLOSSARY_MAX; i++) delete glossary[keys[i]];
+    if (typeof source === "string") { try { nameRingPush(book, glossary, source); } catch (eN) {} }
     var tail = String(translated).slice(-CONTEXT_TAIL_CHARS);
     if (ref.num !== null && ref.num !== undefined) {
         if (!book.tails) book.tails = {};
@@ -623,6 +746,49 @@ function bookContextPut(ref, translated, glossary, source) {
 }
 
 // ---- thể loại truyện (chọn văn phong tự động) ----
+// Danh sách ngắn không phải mục lục (tên truyện, giới thiệu): chấm và giữ tạm, mục lục kế tiếp nhận về.
+function introRemember(lines, text) {
+    var title = "";
+    for (var i = 0; i < lines.length && !title; i++) title = String(lines[i]).trim();
+    qtSave(QT3_INTRO, { t: qtNow(), s: genreScores(text), title: title.substring(0, 80) });
+}
+
+// Giới thiệu ngắn nhưng nói thẳng thể loại ("武侠：…", "怀揣系统…"): tính gấp đôi, chỉ gắn một lần cho mỗi truyện.
+function introAttach(book) {
+    if (book.title) return;
+    var intro = qtLoad(QT3_INTRO, null, true);
+    if (!intro || qtNow() - (intro.t || 0) > INTRO_TTL) return;
+    book.title = intro.title || "";
+    var total = book.g || {};
+    for (var k in (intro.s || {})) total[k] = (total[k] || 0) + 2 * intro.s[k];
+    book.g = total;
+    qtRemove(QT3_INTRO);
+}
+
+// Chốt thể loại khi bằng chứng đủ rõ: nhóm thắng ≥ GENRE_LOCK_MIN điểm và hơn nhóm nhì 1,5 lần (mục lục + giới thiệu
+// của 全职艺术家 cho hd 7 = ht 7 — hoà thì chưa chốt, để chương cộng dồn). Cộng dồn tới GENRE_LOCK_SUM_MAX mà vẫn
+// chưa rõ thì chốt theo nhóm đang dẫn để văn phong không đổi nữa.
+function genreDecide(book, force) {
+    if (book.genre) return;
+    var t = book.g || {}, sum = 0, top = 0, second = 0;
+    var v = [t.co || 0, t.hd || 0, t.nt || 0, t.ht || 0];
+    for (var i = 0; i < v.length; i++) { sum += v[i]; if (v[i] > top) { second = top; top = v[i]; } else if (v[i] > second) second = v[i]; }
+    if (typeof profileFromScores !== "function") return;
+    var clear = top >= GENRE_LOCK_MIN && top >= 1.5 * second;
+    if (!clear && sum < GENRE_LOCK_SUM_MAX) return;
+    var id = profileFromScores({ co: v[0], hd: v[1], nt: v[2], ht: v[3] });
+    if (id) book.genre = id;
+}
+
+function capScores(scores, max) {
+    var sum = 0;
+    for (var k in scores) sum += scores[k];
+    if (sum <= max) return scores;
+    var out = {};
+    for (var k2 in scores) out[k2] = Math.round(scores[k2] * max / sum);
+    return out;
+}
+
 // Điểm thể loại cộng dồn qua từng chương của cùng truyện: một chương lạc đề không đổi được văn phong của cả bộ,
 // và càng đọc thì càng chắc. Không có truyện (chưa gặp mục lục) thì chỉ dùng điểm của chương đang dịch.
 // Chỉ cộng vào bản trong bộ nhớ; bookContextPut ở cuối lượt ghi luôn (lượt bị ngắt thì mất điểm của chương đó, chấp nhận).
@@ -631,14 +797,16 @@ function genreRemember(ref, scores) {
     var store = booksLoad();
     var book = store.b[ref.id];
     if (!book) return scores;
-    if (ref.guessed === true) {
-        // Chương đoán truyện: dùng điểm của truyện để chọn văn phong nhưng không cộng vào sổ — đoán sai một lần
-        // không được làm truyện đổi giọng.
+    if (ref.guessed === true && ref.sure !== true) {
+        // Chương đoán truyện chưa chắc: dùng điểm của truyện để chọn văn phong nhưng không cộng vào sổ — đoán sai
+        // một lần không được làm truyện đổi giọng. Đoán chắc (bản 22) thì cộng như chương có tên: nguồn không lặp
+        // tên chương (metruyencv) trước đây không bao giờ cộng dồn nên văn phong nhảy theo từng chương.
         var view = {};
         for (var g in (book.g || {})) view[g] = book.g[g];
         for (var g2 in scores) view[g2] = (view[g2] || 0) + scores[g2];
         return view;
     }
+    if (ref.num === null && ref.guessed !== true) scores = capScores(scores, TOC_SCORE_MAX);
     var total = book.g || {};
     for (var k in scores) total[k] = (total[k] || 0) + scores[k];
     // Giữ điểm ở mức vừa phải để truyện đổi giọng giữa chừng vẫn theo kịp.
@@ -646,6 +814,7 @@ function genreRemember(ref, scores) {
     for (var k2 in total) sum += total[k2];
     if (sum > 2000) { for (var k3 in total) total[k3] = Math.round(total[k3] / 2); }
     book.g = total;
+    genreDecide(book, ref.num === null && ref.guessed !== true);
     book.used = qtNow();
     store.dirty[ref.id] = true;
     if (ref.num === null && ref.guessed !== true) booksSave(store); // mục lục: không có bookContextPut theo sau
