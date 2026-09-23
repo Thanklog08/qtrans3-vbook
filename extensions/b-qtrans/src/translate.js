@@ -440,6 +440,9 @@ function translateList(text, to, keys) {
     // Mục lục: ghi tên chương → truyện, để dịch chương biết đang ở truyện nào (ngữ cảnh không lẫn truyện).
     // Tên chương cũng là tín hiệu thể loại rẻ nhất: một chương lẻ thường chưa đủ điểm, nhưng cả mục lục thì đủ,
     // nên chương đầu tiên người đọc mở đã có văn phong đúng.
+    if (!looksLikeToc(lines) && indexes.length >= 2 && indexes.length <= 30 && text.length <= 4000) {
+        try { introRemember(lines, text); } catch (eIntro) {}
+    }
     if (looksLikeToc(lines)) {
         try {
             var tocBook = registerToc(lines);
@@ -634,8 +637,11 @@ function profileFromScores(t) {
 // Văn phong tự động: điểm của chương đang dịch cộng dồn vào điểm của truyện (nhận qua mục lục).
 function autoProfile(text, ref) {
     var totals = genreRemember(ref, genreScores(text));
-    var id = profileFromScores(totals);
-    lastGenre = { co: totals.co, hd: totals.hd, nt: totals.nt, ht: totals.ht, chon: id || "vi" };
+    // Truyện đã chốt thể loại thì tra thẳng; điểm chương chỉ còn để xem trong qtrans3_last_call.
+    var book = ref ? booksLoad().b[ref.id] : null;
+    var locked = book && book.genre ? String(book.genre) : "";
+    var id = locked || profileFromScores(totals);
+    lastGenre = { co: totals.co, hd: totals.hd, nt: totals.nt, ht: totals.ht, chon: id || "vi", khoa: locked !== "" };
     return id && promptFor(id) ? id : "";
 }
 
@@ -650,9 +656,13 @@ function translateText(text, from, to) {
     // "auto" (mặc định) tự nhận thể loại từ chính chữ Hán của chương: tủ sách nhiều thể loại thì không phải
     // vào Settings đổi tay mỗi lần chuyển truyện.
     lastGenre = null;
+    // Nhận truyện một lần cho cả lượt (trước đây gọi hai lần). Mục lục không đi qua bước nhận truyện: ở đây nó
+    // từng bị đoán vào truyện đang đọc và điểm thể loại của cả mục lục dồn vào truyện đó.
+    var autoRef = null;
     var profileOverride = configPromptProfile();
     if (to === "vi" && (!profileOverride || profileOverride === "auto")) {
-        var picked = autoProfile(text, findBookForChapter(text));
+        autoRef = looksLikeToc(text.split("\n")) ? null : findBookForChapter(text);
+        var picked = autoProfile(text, autoRef);
         if (picked) to = picked;
     } else if (to === "vi" && profileOverride !== "vi" && promptFor(profileOverride)) {
         to = profileOverride;
@@ -776,12 +786,12 @@ function translateText(text, from, to) {
         var useContext = configFlag(typeof use_context_ae !== "undefined" ? use_context_ae : "", true) && !isShortTextOrList;
         var useQtNames = configFlag(typeof use_qt_names_4 !== "undefined" ? use_qt_names_4 : "", true);
         // Ngữ cảnh theo truyện: nhận truyện qua tên chương (dòng đầu) trong các mục lục đã gặp.
-        var bookRef = useContext ? findBookForChapter(text) : null;
+        var bookRef = useContext ? (autoRef || findBookForChapter(text)) : null;
         var context = bookContextGet(bookRef);
         var worksKnown = 0;
         for (var wk in (context.works || {})) worksKnown++;
         lastBookInfo = bookRef
-            ? { id: bookRef.id, chapter: bookRef.num, previousTail: context.tailUsed, doan: bookRef.guessed === true, tacPham: worksKnown }
+            ? { id: bookRef.id, chapter: bookRef.num, previousTail: context.tailUsed, doan: bookRef.guessed === true, chac: bookRef.sure === true, tacPham: worksKnown }
             : "chưa nhận ra truyện";
         if (useQtNames && !isShortTextOrList) glossaryFromQt(text, context.glossary);
         
