@@ -194,7 +194,7 @@ function purgeAllCaches() {
 // ---- chẩn đoán gửi kèm header x-qtrans-diag của request (Cedric ghi header vào log). Trên iPhone không có
 // cách nào khác đọc localStorage của tiện ích; đây là kênh duy nhất để biết bộ nhớ có giữ được giữa các lượt không.
 var QT3_PROBE = "qtrans3_probe";
-var QT3_VERSION = 22;
+var QT3_VERSION = 23;
 var qtDiag = { n: 0, prev: -1, wr: "?", miss: "", bk: "" };
 
 // Ghi dấu lượt rồi đọc lại ngay (wr) và đo tuổi dấu của lượt trước (prev, giây): prev luôn -1 nghĩa là ghi không
@@ -532,17 +532,19 @@ function bookKeyNames(book) {
 // tên thuộc bộ của ≥ 2 truyện là từ chung và không tính cho ai. Truyện vừa mở chưa có bộ tên chỉ nhận chương khi
 // không truyện nào khác trúng tên và nó là lượt gần nhất. Trả {id, sure}: sure = trội hẳn, được cộng điểm thể loại.
 function guessBook(store, text) {
+    // Bản 22 chỉ xét truyện dùng trong 30 phút và bỏ cuộc khi lượt gần nhất quá hạn: log iPhone 24/9 sau một đêm nghỉ, truyện
+    // võ hiệp (nguồn không lặp tên chương) không bao giờ được xét lại vì không có gì làm mới `used` → 60 chương "none".
+    // Bản 23: xét mọi truyện trong sổ (≤ BOOKS_MAX), thời gian chỉ dùng để ưu tiên.
     var last = store.last;
-    if (!last || !store.b[last.id] || qtNow() - (last.at || 0) > LAST_BOOK_TTL) return null;
     var s = String(text);
     var cands = [];
     for (var id in store.b) {
         var book = store.b[id];
-        if (qtNow() - (book.used || 0) > LAST_BOOK_TTL && id !== last.id) continue;
         var keys = bookKeyNames(book), hasKeys = false;
         for (var kk in keys) { hasKeys = true; break; }
         cands.push({ id: id, book: book, keys: keys, hasKeys: hasKeys, score: 0 });
     }
+    if (cands.length === 0) return null;
     var owners = {};
     for (var c = 0; c < cands.length; c++) { for (var k in cands[c].keys) owners[k] = (owners[k] || 0) + 1; }
     var best = null, second = null;
@@ -562,17 +564,18 @@ function guessBook(store, text) {
     if (best.score >= 1 && secondScore === 0) return { id: best.id, sure: false };
     if (best.score >= 1) return null;
     // Dưới 1 điểm (chỉ trúng từ chung nửa điểm) coi như không trúng.
-    // Không truyện nào trúng tên then chốt. Truyện vừa mở chưa có bộ tên (nguồn không lặp tên chương) thì nhận để bắt
-    // đầu học: ưu tiên truyện có bảng tên thường trúng chương, rồi truyện dùng gần nhất; truyện đã có bảng tên mà
-    // không trúng chữ nào thì không nhận.
+    // Không truyện nào trúng tên then chốt. Truyện chưa có bộ tên (vừa mở, hoặc vừa lên bản mới) nhận chương để bắt đầu
+    // học: xếp theo số tên trong bảng tên thường có mặt, rồi theo lượt dùng gần nhất. Bản 22 bỏ qua truyện có bảng tên mà
+    // không trúng chữ nào → truyện có bảng tên cũ (bản 21) không bao giờ được nhận chương, không học được bộ tên (iPhone
+    // 23/9: 20 chương 全职艺术家 liền "none").
     var pick = null;
     for (var c3 = 0; c3 < cands.length; c3++) {
         var cand2 = cands[c3];
         if (cand2.hasKeys) continue;
         var r = bookNameHits(cand2.book, s);
-        var rank = r.known ? (r.hits >= 1 ? 2 : 0) : 1;
-        if (rank === 0) continue;
-        if (!pick || rank > pick.rank || (rank === pick.rank && (cand2.book.used || 0) > (pick.used || 0))) pick = { id: cand2.id, rank: rank, used: cand2.book.used || 0 };
+        var used = cand2.book.used || 0;
+        if (last && last.id === cand2.id && (last.at || 0) > used) used = last.at;
+        if (!pick || r.hits > pick.hits || (r.hits === pick.hits && used > pick.used)) pick = { id: cand2.id, hits: r.hits, used: used };
     }
     return pick ? { id: pick.id, sure: false } : null;
 }

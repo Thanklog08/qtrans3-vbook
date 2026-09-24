@@ -8,7 +8,7 @@
             "name": "B-Qtrans",
             "author": "BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/b-qtrans/plugin.zip",
-            "version": 22,
+            "version": 23,
             "source": "https://github.com/Thanklog08/qtrans3-vbook",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/b-qtrans/icon.png",
             "description": "Dịch truyện Trung sang tiếng Việt qua Cedric Web (API chuẩn OpenAI). Tự nhận thể loại để chọn văn phong, giữ ngữ cảnh 12 chương gần nhất, bảng tên từ Quick Translate. Nhập địa chỉ Cedric, khoá và model trong cài đặt tiện ích.",
