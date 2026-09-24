@@ -9,7 +9,7 @@ function execute(url) {
     // h1 gồm nhãn nguồn (trong thẻ a) và tên truyện (span con trực tiếp).
     var name = doc.select(".story-detail h1.header-title > span").text().trim();
     var nameOrg = doc.select("h2.inline").text().trim();
-    var author = info.select("a[href*=/tac-gia/]").text();
+    var author = nameCase(info.select("a[href*=/tac-gia/]").text());
     var status = doc.select(".story-detail .story-stage p").text().replace("(", "").replace(")", "").trim();
     var lastChapter = info.select("p a[href*=/chuong-]").text();
     var lastUpdate = info.select("p:contains(Cập nhật)").text().replace("Cập nhật:", "").trim();

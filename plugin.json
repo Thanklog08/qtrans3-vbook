@@ -16,10 +16,10 @@
             "locale": "vi"
         },
         {
-            "name": "Kỳ Huyễn (Dịch tự động từ Qidian)",
+            "name": "Kỳ Huyễn (Cedric)",
             "author": "Đường đen, sửa: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kyhuyen/plugin.zip",
-            "version": 5,
+            "version": 6,
             "source": "https://kyhuyen.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kyhuyen/icon.png",
             "description": "Bản sửa tiện ích \"Dịch truyện tự động từ Qidian\" của Đường đen: trang chuyển từ q.kyhuyen.com sang kyhuyen.com, bỏ watermark và quảng cáo trong chương, mục lục đúng thứ tự, danh mục và thể loại theo trang mới.",
