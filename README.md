@@ -28,6 +28,18 @@ Xoá một tiện ích là mất luôn cài đặt đã lưu của nó.
 
 Tiện ích không chứa khoá nào: `src/apikey.js` không bao giờ được đóng gói.
 
+## Kỳ Huyễn (Dịch tự động từ Qidian)
+
+Bản sửa tiện ích "Dịch truyện tự động từ Qidian" của Đường đen (`duongden/vbook`, bản 3), nằm ở `extensions/kyhuyen/`.
+Cùng kho ở trên, trong danh sách tìm **Kỳ Huyễn (Dịch tự động từ Qidian)**.
+
+- Trang `q.kyhuyen.com` đã ngừng (mọi đường dẫn trả 404); bản này dùng `kyhuyen.com`, link cũ tự đổi sang tên miền mới.
+- Chương: bỏ watermark ẩn (`<span class="d-none">kyhuyen com</span>` kèm dấu chấm đầu đoạn) và quảng cáo chèn giữa bài.
+- Mục lục: bỏ tab "10 chương mới nhất" xếp ngược nên không còn chương lặp và sai thứ tự ở đầu.
+- Danh mục (Mới cập nhật, Đọc nhiều…) và 16 thể loại theo bộ lọc của trang mới; tên truyện không còn dính nhãn "WIKI"/"TTV".
+
+Mã nguồn phát triển: `vbook-ext/extensions/kyhuyen-bbook`; đóng gói bằng `python tools/build_ext.py` của repo đó.
+
 ## Cập nhật repo này từ bản phát triển
 
 Mã nguồn thật nằm trong repo phát triển (`vbook-ext/extensions/qtrans3-cedric`). Để đẩy bản mới:
