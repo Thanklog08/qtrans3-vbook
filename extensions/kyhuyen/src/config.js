@@ -10,6 +10,13 @@ function fixUrl(url) {
     return url;
 }
 
+// Trang ghi tên tác giả như câu thường ("Khách sơn thanh lộc"); viết hoa đầu mỗi chữ để nhìn ra là tên riêng.
+function nameCase(s) {
+    return String(s || "").trim().split(/\s+/).map(function (w) {
+        return w.charAt(0).toUpperCase() + w.substring(1);
+    }).join(" ");
+}
+
 // Danh sách truyện (tìm kiếm, bảng xếp hạng, thể loại). Tiêu đề có nhãn nguồn ("WIKI", "TTV") trong cùng thẻ,
 // nên lấy tên từ thuộc tính title của link bìa.
 function parseList(doc) {
@@ -22,7 +29,7 @@ function parseList(doc) {
             name: name,
             link: fixUrl(link.attr("href")),
             cover: fixUrl(e.select(".media-left img.media-object").attr("src")),
-            description: e.select(".media-body a[href*=/tac-gia/]").text(),
+            description: nameCase(e.select(".media-body a[href*=/tac-gia/]").text()),
             host: BASE_URL
         });
     });

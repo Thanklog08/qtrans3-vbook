@@ -1,9 +1,9 @@
 {
   "metadata": {
     "id": "kyhuyen-bbook",
-    "name": "Kỳ Huyễn (Dịch tự động từ Qidian)",
+    "name": "Kỳ Huyễn (Cedric)",
     "author": "Đường đen, sửa: BBook",
-    "version": 5,
+    "version": 6,
     "source": "https://kyhuyen.com",
     "regexp": "https://(q\\.)?kyhuyen\\.com/(truyen/)?[a-z0-9-]+/?$",
     "description": "Bản sửa tiện ích \"Dịch truyện tự động từ Qidian\" của Đường đen: trang đã chuyển từ q.kyhuyen.com sang kyhuyen.com; bỏ watermark và quảng cáo trong chương; mục lục đúng thứ tự.",
