@@ -34,7 +34,7 @@ Bản sửa tiện ích "Dịch truyện tự động từ Qidian" của Đườ
 Cùng kho ở trên, trong danh sách tìm **Kỳ Huyễn (Dịch tự động từ Qidian)**.
 
 - Trang `q.kyhuyen.com` đã ngừng (mọi đường dẫn trả 404); bản này dùng `kyhuyen.com`, link cũ tự đổi sang tên miền mới.
-- Chương: bỏ watermark ẩn (`<span class="d-none">kyhuyen com</span>` kèm dấu chấm đầu đoạn) và quảng cáo chèn giữa bài.
+- Chương: bỏ watermark ẩn (`<span class="d-none">`, link `KyHuyen.com` kèm dấu chấm đầu dòng, cả chương dạng `<p>` lẫn `<br>`) và quảng cáo chèn giữa bài.
 - Mục lục: bỏ tab "10 chương mới nhất" xếp ngược nên không còn chương lặp và sai thứ tự ở đầu.
 - Danh mục (Mới cập nhật, Đọc nhiều…) và 16 thể loại theo bộ lọc của trang mới; tên truyện không còn dính nhãn "WIKI"/"TTV".
 
