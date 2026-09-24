@@ -69,7 +69,8 @@ var BOOKS_SCHEMA = 22;
 // Giữ tạm INTRO_TTL để gắn vào truyện khi mục lục tới. Thể loại của truyện CHỐT một lần khi mục lục + giới thiệu đủ
 // điểm, hoặc khi điểm chương cộng dồn đủ rõ (genreDecide); chương sau chỉ tra, không chấm lại (yêu cầu người dùng 23/9).
 var QT3_INTRO = "qtrans3_intro";
-var INTRO_TTL = 3 * 60 * 1000;
+// Giới thiệu và mục lục của cùng truyện đến cách nhau 0–3 giây; mở hai truyện liền nhau thì giới thiệu truyện sau ghi đè.
+var INTRO_TTL = 20 * 1000;
 var GENRE_LOCK_MIN = 8;
 var GENRE_LOCK_SUM_MAX = 60;
 
@@ -194,7 +195,7 @@ function purgeAllCaches() {
 // ---- chẩn đoán gửi kèm header x-qtrans-diag của request (Cedric ghi header vào log). Trên iPhone không có
 // cách nào khác đọc localStorage của tiện ích; đây là kênh duy nhất để biết bộ nhớ có giữ được giữa các lượt không.
 var QT3_PROBE = "qtrans3_probe";
-var QT3_VERSION = 23;
+var QT3_VERSION = 24;
 var qtDiag = { n: 0, prev: -1, wr: "?", miss: "", bk: "" };
 
 // Ghi dấu lượt rồi đọc lại ngay (wr) và đo tuổi dấu của lượt trước (prev, giây): prev luôn -1 nghĩa là ghi không
@@ -385,28 +386,96 @@ function booksLoad() {
     qtMem.__books = store;
     if ((idx.v || 0) < BOOKS_SCHEMA) {
         for (var m in store.b) { delete store.b[m].g; store.dirty[m] = true; }
+        store.noMerge = true;
         booksSave(store);
+        store.noMerge = false;
     }
     return store;
 }
 
+// Truyện lượt khác vừa thêm vào chỉ mục (mục lục mở song song) mà lượt này chưa nạp.
+function booksRefresh(store) {
+    var disk = qtLoad(QT3_BIDX, { ids: [] }, true);
+    var added = 0, ids = (disk && disk.ids) || [];
+    for (var i = 0; i < ids.length; i++) {
+        if (store.b[ids[i]]) continue;
+        var bk = qtLoad(QT3_BOOK + ids[i], null, true);
+        if (bk && bk.titles) { store.b[ids[i]] = bk; added++; }
+    }
+    return added;
+}
+
+// Gộp bản trên đĩa (lượt khác vừa ghi) vào bản của lượt này trước khi ghi đè. vBook chạy 2 lượt song song và mỗi lượt
+// giữ bản đọc lúc đầu; bản 22–23 ghi đè cả cục nên mất khoá thể loại vừa chốt, tên chương, bộ tên của lượt kia.
+function bookMerge(b, d) {
+    if (!d || !d.titles) return;
+    if (!b.genre && d.genre) b.genre = d.genre;
+    if (!b.title && d.title) b.title = d.title;
+    b.titles = b.titles || {};
+    var n = 0;
+    for (var h in b.titles) n++;
+    for (var h2 in d.titles) { if (b.titles[h2] === undefined && n < TITLES_PER_BOOK) { b.titles[h2] = d.titles[h2]; n++; } }
+    if (d.tails) {
+        b.tails = b.tails || {};
+        for (var t in d.tails) { if (b.tails[t] === undefined) b.tails[t] = d.tails[t]; }
+        var nums = [];
+        for (var t2 in b.tails) nums.push(parseInt(t2, 10));
+        if (nums.length > TAILS_MAX) {
+            nums.sort(function(x, y) { return x - y; });
+            for (var k = 0; k < nums.length - TAILS_MAX; k++) delete b.tails[String(nums[k])];
+        }
+    }
+    if (d.nr && d.nr.length) {
+        var ring = b.nr || [], have = {}, missing = [];
+        for (var r = 0; r < ring.length; r++) have[ring[r].h] = true;
+        for (var r2 = 0; r2 < d.nr.length; r2++) { if (!have[d.nr[r2].h]) missing.push(d.nr[r2]); }
+        ring = missing.concat(ring);
+        if (ring.length > NAME_RING) ring.splice(0, ring.length - NAME_RING);
+        b.nr = ring;
+    }
+    if (d.works) {
+        b.works = b.works || {};
+        for (var w in d.works) { if (b.works[w] === undefined) b.works[w] = d.works[w]; }
+    }
+    if (d.g) {
+        b.g = b.g || {};
+        for (var g in d.g) { if ((d.g[g] || 0) > (b.g[g] || 0)) b.g[g] = d.g[g]; }
+    }
+    if (d.ctx && (!b.ctx || (d.ctx.at || 0) > (b.ctx.at || 0))) b.ctx = d.ctx;
+    if ((d.used || 0) > (b.used || 0)) b.used = d.used;
+}
+
+// Bản 24: chỉ mục ghi theo bản mới nhất trên đĩa. Log iPhone 24/9 10:07: mở hai truyện mới cùng lúc, hai mục lục thêm
+// hai truyện (b 4→6), rồi các lượt dịch chương đã nạp chỉ mục từ trước ghi lại danh sách cũ → hai truyện biến mất khỏi
+// chỉ mục (b=4 lúc 11:29) và chương của chúng bị đoán sang truyện khác (李随风 vào sổ truyện 林风, 秦长生 vào một truyện cũ).
 function booksSave(store) {
     var now = qtNow();
-    var ids = [];
+    var ids = [], removed = store.removed || (store.removed = {});
     for (var id in store.b) {
-        if (now - (store.b[id].used || 0) > BOOK_TTL) { qtRemove(QT3_BOOK + id); delete store.b[id]; }
+        if (now - (store.b[id].used || 0) > BOOK_TTL) { qtRemove(QT3_BOOK + id); delete store.b[id]; removed[id] = true; }
         else ids.push(id);
     }
-    if (ids.length > BOOKS_MAX) {
+    var extra = [];
+    if (!store.noMerge) {
+        var disk = qtLoad(QT3_BIDX, { ids: [] }, true);
+        var diskIds = (disk && disk.ids) || [];
+        for (var e = 0; e < diskIds.length; e++) {
+            var x = diskIds[e];
+            if (!store.b[x] && !removed[x] && extra.indexOf(x) < 0 && qtHas(QT3_BOOK + x)) extra.push(x);
+        }
+    }
+    if (ids.length + extra.length > BOOKS_MAX) {
         ids.sort(function(a, b) { return (store.b[a].used || 0) - (store.b[b].used || 0); });
-        var drop = ids.splice(0, ids.length - BOOKS_MAX);
-        for (var d = 0; d < drop.length; d++) { qtRemove(QT3_BOOK + drop[d]); delete store.b[drop[d]]; }
+        var drop = ids.splice(0, Math.min(ids.length, ids.length + extra.length - BOOKS_MAX));
+        for (var d = 0; d < drop.length; d++) { qtRemove(QT3_BOOK + drop[d]); delete store.b[drop[d]]; removed[drop[d]] = true; }
     }
     for (var k in store.dirty) {
-        if (store.b[k]) qtSave(QT3_BOOK + k, store.b[k]);
+        if (!store.b[k]) continue;
+        if (!store.noMerge) bookMerge(store.b[k], qtLoad(QT3_BOOK + k, null, true));
+        qtSave(QT3_BOOK + k, store.b[k]);
     }
     store.dirty = {};
-    qtSave(QT3_BIDX, { ids: ids, last: store.last || null, v: BOOKS_SCHEMA });
+    qtSave(QT3_BIDX, { ids: ids.concat(extra), last: store.last || null, v: BOOKS_SCHEMA });
 }
 
 // Mục lục vBook gửi dịch (một hoặc nhiều lượt): ghi tên chương → số chương cho truyện chứa nó.
@@ -531,7 +600,7 @@ function bookKeyNames(book) {
 // song song (xem ghi chú đầu file). Bản 22: chấm mọi truyện vừa dùng theo số tên THEN CHỐT của nó có trong chương,
 // tên thuộc bộ của ≥ 2 truyện là từ chung và không tính cho ai. Truyện vừa mở chưa có bộ tên chỉ nhận chương khi
 // không truyện nào khác trúng tên và nó là lượt gần nhất. Trả {id, sure}: sure = trội hẳn, được cộng điểm thể loại.
-function guessBook(store, text) {
+function guessBook(store, text, noBootstrap) {
     // Bản 22 chỉ xét truyện dùng trong 30 phút và bỏ cuộc khi lượt gần nhất quá hạn: log iPhone 24/9 sau một đêm nghỉ, truyện
     // võ hiệp (nguồn không lặp tên chương) không bao giờ được xét lại vì không có gì làm mới `used` → 60 chương "none".
     // Bản 23: xét mọi truyện trong sổ (≤ BOOKS_MAX), thời gian chỉ dùng để ưu tiên.
@@ -568,6 +637,7 @@ function guessBook(store, text) {
     // học: xếp theo số tên trong bảng tên thường có mặt, rồi theo lượt dùng gần nhất. Bản 22 bỏ qua truyện có bảng tên mà
     // không trúng chữ nào → truyện có bảng tên cũ (bản 21) không bao giờ được nhận chương, không học được bộ tên (iPhone
     // 23/9: 20 chương 全职艺术家 liền "none").
+    if (noBootstrap) return null;
     var pick = null;
     for (var c3 = 0; c3 < cands.length; c3++) {
         var cand2 = cands[c3];
@@ -588,19 +658,27 @@ function findBookForChapter(text) {
         if (lines[i].trim()) heads.push(lines[i].trim());
     }
     var store = booksLoad();
-    for (var p = 0; p < heads.length; p++) {
-        var h = qtHash(normTitle(heads[p]));
-        for (var id in store.b) {
-            var titles = store.b[id].titles || {};
-            if (titles[h] === undefined) continue;
-            var num = chapterNumber(heads[p]);
-            rememberBook(id);
-            qtDiag.bk = id.substring(1, 6) + ":ten";
-            return { id: id, num: num !== null ? num : titles[h] };
+    var titled = false;
+    for (var p0 = 0; p0 < heads.length; p0++) { if (chapterNumber(heads[p0]) !== null) { titled = true; break; } }
+    // Lần hai: nạp thêm truyện lượt khác vừa đăng ký (mục lục đang dịch song song với chương đầu tiên).
+    for (var pass = 0; pass < 2; pass++) {
+        for (var p = 0; p < heads.length; p++) {
+            var h = qtHash(normTitle(heads[p]));
+            for (var id in store.b) {
+                var titles = store.b[id].titles || {};
+                if (titles[h] === undefined) continue;
+                var num = chapterNumber(heads[p]);
+                rememberBook(id);
+                qtDiag.bk = id.substring(1, 6) + ":ten";
+                return { id: id, num: num !== null ? num : titles[h] };
+            }
         }
+        if (pass === 0 && (!titled || booksRefresh(store) === 0)) break;
     }
-    var guessed = guessBook(store, text);
-    qtDiag.bk = guessed ? guessed.id.substring(1, 6) + (guessed.sure ? ":chac" : ":doan") : "none";
+    // Chương có tên chương mà không có trong mục lục nào: truyện mới/chưa qua mục lục. Chỉ nhận theo tên nhân vật, không
+    // "bootstrap" vào truyện chưa có bộ tên (bản 23 gán 第1章 của truyện mới sang sổ truyện 林风).
+    var guessed = guessBook(store, text, titled);
+    qtDiag.bk = guessed ? guessed.id.substring(1, 6) + (guessed.sure ? ":chac" : ":doan") : (titled ? "moi" : "none");
     if (!guessed) return null;
     rememberBook(guessed.id);
     return { id: guessed.id, num: null, guessed: true, sure: guessed.sure === true };
