@@ -1,0 +1,22 @@
+{
+  "metadata": {
+    "id": "kyhuyen-bbook",
+    "name": "Kỳ Huyễn (Dịch tự động từ Qidian)",
+    "author": "Đường đen, sửa: BBook",
+    "version": 4,
+    "source": "https://kyhuyen.com",
+    "regexp": "https://(q\\.)?kyhuyen\\.com/(truyen/)?[a-z0-9-]+/?$",
+    "description": "Bản sửa tiện ích \"Dịch truyện tự động từ Qidian\" của Đường đen: trang đã chuyển từ q.kyhuyen.com sang kyhuyen.com; bỏ watermark và quảng cáo trong chương; mục lục đúng thứ tự.",
+    "locale": "vi_VN",
+    "type": "novel",
+    "language": "javascript"
+  },
+  "script": {
+    "home": "home.js",
+    "genre": "genre.js",
+    "detail": "detail.js",
+    "search": "search.js",
+    "toc": "toc.js",
+    "chap": "chap.js"
+  }
+}

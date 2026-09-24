@@ -1,7 +1,7 @@
 {
     "metadata": {
         "author": "BBook",
-        "description": "Kho tiện ích dịch B-Qtrans (Q-trans 3 qua Cedric Web) cho vBook"
+        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web) và Kỳ Huyễn (đọc truyện kyhuyen.com)"
     },
     "data": [
         {
@@ -14,6 +14,17 @@
             "description": "Dịch truyện Trung sang tiếng Việt qua Cedric Web (API chuẩn OpenAI). Tự nhận thể loại để chọn văn phong, giữ ngữ cảnh 12 chương gần nhất, bảng tên từ Quick Translate. Nhập địa chỉ Cedric, khoá và model trong cài đặt tiện ích.",
             "type": "translate",
             "locale": "vi"
+        },
+        {
+            "name": "Kỳ Huyễn (Dịch tự động từ Qidian)",
+            "author": "Đường đen, sửa: BBook",
+            "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kyhuyen/plugin.zip",
+            "version": 4,
+            "source": "https://kyhuyen.com",
+            "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kyhuyen/icon.png",
+            "description": "Bản sửa tiện ích \"Dịch truyện tự động từ Qidian\" của Đường đen: trang chuyển từ q.kyhuyen.com sang kyhuyen.com, bỏ watermark và quảng cáo trong chương, mục lục đúng thứ tự, danh mục và thể loại theo trang mới.",
+            "type": "novel",
+            "locale": "vi_VN"
         }
     ]
 }
