@@ -1,7 +1,7 @@
 {
     "metadata": {
         "author": "BBook",
-        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web), Kỳ Huyễn (đọc truyện kyhuyen.com) và Tàng Thư Viện (đọc truyện tangthuvien.org)"
+        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web) và các nguồn đọc truyện Kỳ Huyễn, Tàng Thư Viện, Truyencom, Faloo 飞卢"
     },
     "data": [
         {
@@ -36,6 +36,28 @@
             "description": "Đọc truyện trên tangthuvien.org (Tàng Thư Viện bản web mới, khác app cũ). Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; chương khoá được đánh dấu trả phí và chỉ hiện đoạn đầu.",
             "type": "novel",
             "locale": "vi_VN"
+        },
+        {
+            "name": "Truyencom (Cedric)",
+            "author": "BBook",
+            "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/truyencom/plugin.zip",
+            "version": 1,
+            "source": "https://truyencom.com",
+            "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/truyencom/icon.png",
+            "description": "Đọc truyện trên truyencom.com (dtruyen, webtruyen cũ gộp về đây), khoảng 23 nghìn truyện dịch/convert. Mạng chặn truyencom thì chọn truyenhoan.com (cùng nội dung) trong cài đặt tiện ích.",
+            "type": "novel",
+            "locale": "vi_VN"
+        },
+        {
+            "name": "Faloo 飞卢 (Cedric)",
+            "author": "BBook",
+            "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/faloo/plugin.zip",
+            "version": 1,
+            "source": "https://wap.faloo.com",
+            "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/faloo/icon.png",
+            "description": "Đọc truyện Trung trên 飞卢小说网 (bản wap.faloo.com): hệ thống, đồng nhân, huyền huyễn… Phần lớn truyện chỉ mở vài chục chương đầu, chương VIP đánh dấu trả phí (cần tài khoản và mua trên faloo). Dùng kèm tiện ích dịch.",
+            "type": "chinese_novel",
+            "locale": "zh_CN"
         }
     ]
 }
