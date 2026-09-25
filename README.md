@@ -41,6 +41,21 @@ Cùng kho ở trên, trong danh sách tìm **Kỳ Huyễn (Cedric)** (bản 4–
 
 Mã nguồn phát triển: `vbook-ext/extensions/kyhuyen-bbook`; đóng gói bằng `python tools/build_ext.py` của repo đó.
 
+## Tàng Thư Viện (Cedric)
+
+Đọc truyện trên `tangthuvien.org` (trang web mới của Tàng Thư Viện, khác app cũ), nằm ở `extensions/tangthuvien/`. Cùng
+kho ở trên, trong danh sách tìm **Tàng Thư Viện (Cedric)**.
+
+- Khám phá: Mới cập nhật, Truyện mới, Thịnh hành, Đề cử, xếp hạng tuần/tháng/mọi lúc, Theo dõi nhiều, Hoàn thành; tìm kiếm
+  (gõ không dấu cũng được) và thể loại.
+- Trang truyện hiện 50 chương đầu; bấm **Xem tất cả** để nạp hết mục lục (site trả 50 chương mỗi lượt, truyện rất dài cần
+  một lúc).
+- Chương khoá có biểu tượng trả phí. Truyện "độc quyền dịch" trên web chỉ mở khoảng 100 chương đầu, chương sau chỉ hiện
+  đoạn đầu kèm ghi chú; bản đầy đủ đọc trong app của site. Tiện ích không vượt khoá.
+- Site chỉ lọc được 49 thể loại; Tiên hiệp, Đô thị, Xuyên không… không lọc được nên chỉ ghi trong phần thông tin truyện.
+
+Mã nguồn phát triển: `vbook-ext/extensions/tangthuvien-org` (ghi chú `docs/notes/tangthuvien-org.md`).
+
 ## Cập nhật repo này từ bản phát triển
 
 Mã nguồn thật nằm trong repo phát triển (`vbook-ext/extensions/qtrans3-cedric`). Để đẩy bản mới:

@@ -1,7 +1,7 @@
 {
     "metadata": {
         "author": "BBook",
-        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web) và Kỳ Huyễn (đọc truyện kyhuyen.com)"
+        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web), Kỳ Huyễn (đọc truyện kyhuyen.com) và Tàng Thư Viện (đọc truyện tangthuvien.org)"
     },
     "data": [
         {
@@ -23,6 +23,17 @@
             "source": "https://kyhuyen.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kyhuyen/icon.png",
             "description": "Bản sửa tiện ích \"Dịch truyện tự động từ Qidian\" của Đường đen: trang chuyển từ q.kyhuyen.com sang kyhuyen.com, bỏ watermark và quảng cáo trong chương, mục lục đúng thứ tự, danh mục và thể loại theo trang mới.",
+            "type": "novel",
+            "locale": "vi_VN"
+        },
+        {
+            "name": "Tàng Thư Viện (Cedric)",
+            "author": "BBook",
+            "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/tangthuvien/plugin.zip",
+            "version": 1,
+            "source": "https://tangthuvien.org",
+            "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/tangthuvien/icon.png",
+            "description": "Đọc truyện trên tangthuvien.org (Tàng Thư Viện bản web mới, khác app cũ). Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; chương khoá được đánh dấu trả phí và chỉ hiện đoạn đầu.",
             "type": "novel",
             "locale": "vi_VN"
         }
