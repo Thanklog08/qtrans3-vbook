@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "id": "tangthuvien-org",
+    "name": "Tàng Thư Viện (Cedric)",
+    "author": "BBook",
+    "version": 1,
+    "source": "https://tangthuvien.org",
+    "regexp": "https?://(www\\.)?tangthuvien\\.org/(?!(?:truyen|truyen-moi|moi-cap-nhat|thinh-hanh|de-cu|sitemap)/?$)[a-z0-9-]+/?$",
+    "description": "Đọc truyện trên tangthuvien.org (Tàng Thư Viện bản web mới, khác app cũ). Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; chương khoá được đánh dấu trả phí và chỉ hiện đoạn đầu.",
+    "locale": "vi_VN",
+    "type": "novel",
+    "language": "javascript"
+  },
+  "script": {
+    "home": "home.js",
+    "genre": "genre.js",
+    "detail": "detail.js",
+    "search": "search.js",
+    "page": "page.js",
+    "toc": "toc.js",
+    "chap": "chap.js"
+  }
+}
