@@ -12,6 +12,7 @@
 //   qtrans3_lines     cache theo dòng cho danh sách/mục lục (≤ 1.500 dòng, 14 ngày); chỉ đường danh sách mới đọc.
 //   qtrans3_inflight  lượt đang dịch (60 giây, chờ tối đa 40 giây).
 //   qtrans3_log       nhật ký 15 lượt gần nhất.
+//   qtrans3_cool      model đang tạm nghỉ vì Cedric trả 429 → giờ gọi lại (bản 25). Không xoá khi tắt bộ nhớ đệm.
 //
 // Trong một lượt chạy, mỗi khoá chỉ parse một lần (memo). qtStats đếm số lần đọc/ghi và cục ghi lớn nhất, ghi ra
 // qtrans3_last_call.storage để nghiệm thu trên máy thật. Khoá cũ (qtrans3_books/recent/chunks) tự chuyển ở lượt đầu.
@@ -23,6 +24,7 @@ var QT3_BIDX = "qtrans3_bidx";
 var QT3_BOOK = "qtrans3_b_";
 var QT3_CIDX = "qtrans3_cidx";
 var QT3_ENTRY = "qtrans3_c_";
+var QT3_COOL = "qtrans3_cool";
 // Bản ≤ 18
 var QT3_BOOKS_OLD = "qtrans3_books";
 var QT3_RECENT_OLD = "qtrans3_recent";
@@ -55,9 +57,8 @@ var CHAIN_TTL = 15 * 60 * 1000;
 // Bản 22: nhận truyện bằng tên lặp qua nhiều chương của CHÍNH truyện đó. Bảng tên QT (glossary) đầy từ chung
 // (地球, 电视, 凌晨, 穿越, 皇帝…) nên chương nào cũng "trúng tên" truyện khác — log iPhone 23/9: mở mục lục truyện võ
 // hiệp lúc 13:44Z là 55/62 chương đô thị kế tiếp bị gán sang nó và nhận văn phong cổ trang. Mỗi truyện giữ bộ tên
-// có mặt trong NAME_RING chương gần nhất; tên "then chốt" = xuất hiện ở ≥ NAME_MIN_CHAPTERS chương.
+// có mặt trong NAME_RING chương gần nhất (bản 25: chấm theo tỉ lệ chương có tên, xem bookKeyNames).
 var NAME_RING = 12;
-var NAME_MIN_CHAPTERS = 3;
 var NAMES_PER_CHAPTER = 40;
 // Điểm thể loại của mục lục ép về cỡ một chương: mục lục 500 tên chương (≈ 60 điểm) từng át mọi chương của truyện,
 // nhất là truyện mà chương không lặp tên chương nên không bao giờ cộng dồn được.
@@ -195,7 +196,7 @@ function purgeAllCaches() {
 // ---- chẩn đoán gửi kèm header x-qtrans-diag của request (Cedric ghi header vào log). Trên iPhone không có
 // cách nào khác đọc localStorage của tiện ích; đây là kênh duy nhất để biết bộ nhớ có giữ được giữa các lượt không.
 var QT3_PROBE = "qtrans3_probe";
-var QT3_VERSION = 24;
+var QT3_VERSION = 25;
 var qtDiag = { n: 0, prev: -1, wr: "?", miss: "", bk: "" };
 
 // Ghi dấu lượt rồi đọc lại ngay (wr) và đo tuổi dấu của lượt trước (prev, giây): prev luôn -1 nghĩa là ghi không
@@ -226,9 +227,12 @@ function qtDiagString() {
             out += " l=" + lc;
         }
     } catch (e) {}
-    // bk: truyện được nhận (5 ký tự id) và cách nhận (ten/chac/doan/none); g: văn phong auto đã chọn.
+    // bk: truyện được nhận (5 ký tự id) và cách nhận (ten/chac/doan/none); g: văn phong auto đã chọn; cool: số model đang
+    // tạm nghỉ vì 429 (không có thì không in).
     var genre = typeof lastGenre !== "undefined" && lastGenre ? String(lastGenre.chon).replace("vi_", "") + (lastGenre.khoa ? "!" : "") : "-";
-    return out + " r=" + qtStats.reads + " w=" + qtStats.writes + " bk=" + (qtDiag.bk || "-") + " g=" + genre;
+    var cool = 0;
+    try { cool = coolCount(); } catch (eC) {}
+    return out + " r=" + qtStats.reads + " w=" + qtStats.writes + " bk=" + (qtDiag.bk || "-") + " g=" + genre + (cool ? " cool=" + cool : "");
 }
 
 // ---- bản dịch chương / đoạn: mỗi mục một khoá ----
@@ -307,6 +311,43 @@ function waitForSameList(key) {
         try { sleep(1000); } catch (e) { return; }
         if (!qtLoad(QT3_INFLIGHT, {}, true)[key]) return;
     }
+}
+
+// ---- model tạm nghỉ khi Cedric trả 429 ----
+// Log iPhone 25/9 07:17–07:28: antigravity hết quota, 342 lượt dịch chương lượt nào cũng gọi đủ 3 model và nhận 429 trong
+// vài mili giây (1.028 request thừa), vBook cứ thế chuyển chương. Cedric kèm retry_after_ms (~1–2 phút) khi hết account;
+// model bị 429 nghỉ chừng đó (không có thì COOL_DEFAULT, tối đa COOL_MAX), các lượt sau bỏ qua nó, không gọi Cedric.
+var COOL_DEFAULT = 60 * 1000;
+var COOL_MAX = 10 * 60 * 1000;
+
+function coolUntil(model) {
+    var t = qtLoad(QT3_COOL, {}, true)[model] || 0;
+    return t > qtNow() ? t : 0;
+}
+
+function coolSet(model, ms) {
+    var store = qtLoad(QT3_COOL, {}, true), now = qtNow(), next = {};
+    for (var k in store) { if (store[k] > now) next[k] = store[k]; }
+    next[model] = now + Math.min(Math.max(ms || COOL_DEFAULT, 1000), COOL_MAX);
+    qtSave(QT3_COOL, next);
+}
+
+function coolCount() {
+    var store = qtLoad(QT3_COOL, {}), now = qtNow(), n = 0;
+    for (var k in store) { if (store[k] > now) n++; }
+    return n;
+}
+
+function coolMsFromBody(body) {
+    var m = /"retry_after_ms"\s*:\s*(\d+)/.exec(String(body));
+    return m ? parseInt(m[1], 10) : 0;
+}
+
+// Giờ trên máy (HH:MM:SS) cho thông báo lỗi.
+function clockText(t) {
+    var d = new Date(t);
+    var p = function(n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
 }
 
 // ---- cache theo dòng cho danh sách ----
@@ -535,6 +576,10 @@ function bookNameHits(book, text) {
 // của 全职艺术家 chỉ có 楚狂/鲁阳 và chương kế bị gán sang truyện võ hiệp vừa mở.
 var NAME_MIN_HITS = 4;
 var SURNAMES = "王李张刘陈杨黄赵吴周徐孙马朱胡郭何高林罗郑梁谢宋唐许韩冯邓曹彭曾萧田董袁潘于蒋蔡余杜叶程苏魏吕丁任沈姚卢姜崔钟谭陆汪范金石廖贾夏韦付方白邹孟熊秦邱江尹薛闫段雷侯龙史陶黎贺顾毛郝龚邵万钱严覃武戴莫孔向汤楚蓝叶洛柳慕容欧阳司徒上官诸葛南宫东方独孤令狐宇文长孙凌沐夜云风花月墨白苏叶秦楚";
+// Tên tổ chức 3 chữ (青龙会, 白莲教, 阎罗殿): truyện quần hùng ít lặp tên nhân vật chính nhưng chương nào cũng có tổ chức của
+// nhân vật chính (log 25/9: 青龙会 ở 95% chương truyện 宝箱, thường 1–5 lần/chương nên ngưỡng thấp hơn tên người).
+var ORG_SUFFIX = "会门派宗教殿阁宫盟帮寺观府楼庄谷族堂";
+var ORG_MIN_HITS = 2;
 var NAME_STOP = "的了是在和与也都就不有我你他她它们说道着过上下来去到把被给对从向里中后前时人个这那之而以为又才很更最还但却并及因所么呢吧啊哦嗯没会能要将让使被等";
 function textNameCandidates(text) {
     var s = String(text), count = {}, out = [];
@@ -542,11 +587,15 @@ function textNameCandidates(text) {
         var c1 = s.charCodeAt(i), c2 = s.charCodeAt(i + 1);
         if (c1 < 0x4e00 || c1 > 0x9fff || c2 < 0x4e00 || c2 > 0x9fff) continue;
         var a = s.charAt(i), b = s.charAt(i + 1);
-        if (SURNAMES.indexOf(a) < 0 || NAME_STOP.indexOf(b) > -1 || NAME_STOP.indexOf(a) > -1) continue;
-        var w = a + b;
-        count[w] = (count[w] || 0) + 1;
+        if (NAME_STOP.indexOf(b) > -1 || NAME_STOP.indexOf(a) > -1) continue;
+        if (SURNAMES.indexOf(a) > -1) count[a + b] = (count[a + b] || 0) + 1;
+        var c = s.charAt(i + 2);
+        if (c && ORG_SUFFIX.indexOf(c) > -1) count["#" + a + b + c] = (count["#" + a + b + c] || 0) + 1;
     }
-    for (var k in count) { if (count[k] >= NAME_MIN_HITS) out.push([k, count[k]]); }
+    for (var k in count) {
+        if (k.charAt(0) === "#") { if (count[k] >= ORG_MIN_HITS) out.push([k.substring(1), count[k]]); }
+        else if (count[k] >= NAME_MIN_HITS) out.push([k, count[k]]);
+    }
     out.sort(function(x, y) { return y[1] - x[1]; });
     var names = [];
     for (var j = 0; j < out.length && j < 15; j++) names.push(out[j][0]);
@@ -580,8 +629,9 @@ function nameRingPush(book, glossary, source) {
     book.nr = ring;
 }
 
-// Tên then chốt của truyện: có mặt ở ≥ NAME_MIN_CHAPTERS chương và ≥ 60% số chương trong bộ (mới có 2 chương thì phải ở
-// cả hai). Tên lấy từ chữ (nhân vật lặp nhiều lần) nặng 1; tên chỉ đến từ bảng tên QT (hay là từ chung: 皇帝, 地球) nặng 0,5.
+// Trọng số tên của truyện = tỉ lệ chương trong bộ có tên đó (tên chỉ đến từ bảng tên QT tính nửa); tên có ở < 2 chương
+// bỏ. Bản 22–24 dùng ngưỡng cứng (≥ 60% chương = "tên then chốt", còn lại không tính): truyện quần hùng 宝箱 (log 25/9)
+// chỉ có 青龙会 đủ ngưỡng, vài chương bị đoán sang truyện khác là bộ tên hai truyện đổi hẳn, 271 chương "none".
 function bookKeyNames(book) {
     var ring = (book && book.nr) || [];
     var count = {}, strong = {}, out = {};
@@ -590,16 +640,20 @@ function bookKeyNames(book) {
         for (var j = 0; j < names.length; j++) count[names[j]] = (count[names[j]] || 0) + 1;
         for (var j2 = 0; j2 < t.length; j2++) strong[t[j2]] = (strong[t[j2]] || 0) + 1;
     }
-    var need = ring.length >= NAME_MIN_CHAPTERS ? Math.max(NAME_MIN_CHAPTERS, Math.ceil(ring.length * 0.6)) : (ring.length >= 2 ? ring.length : 0);
-    if (need === 0) return out;
-    for (var k in count) { if (count[k] >= need) out[k] = (strong[k] || 0) >= need ? 1 : 0.5; }
+    if (ring.length < 2) return out;
+    for (var k in count) {
+        if (count[k] < 2) continue;
+        out[k] = (count[k] / ring.length) * ((strong[k] || 0) * 2 >= count[k] ? 1 : 0.5);
+    }
     return out;
 }
 
 // Bản 18 chỉ xét truyện dùng gần nhất; bản 21 chấm theo bảng tên QT — cả hai đều gán nhầm khi đọc hai truyện
-// song song (xem ghi chú đầu file). Bản 22: chấm mọi truyện vừa dùng theo số tên THEN CHỐT của nó có trong chương,
-// tên thuộc bộ của ≥ 2 truyện là từ chung và không tính cho ai. Truyện vừa mở chưa có bộ tên chỉ nhận chương khi
-// không truyện nào khác trúng tên và nó là lượt gần nhất. Trả {id, sure}: sure = trội hẳn, được cộng điểm thể loại.
+// song song (xem ghi chú đầu file). Bản 25: tên có trong chương cộng cho truyện phần trọng số vượt truyện kế tiếp có tên
+// đó — tên chung (皇帝, 张三丰 ở hai truyện võ hiệp) tự triệt tiêu, tên đặc trưng vẫn tính. Chạy lại 2.513 chương iPhone
+// 23–25/9: bản 24 đúng 86% (truyện 宝箱 phiên 25/9: 89/279), bản 25 đúng 99%, gán nhầm 3. Truyện vừa mở chưa có bộ tên
+// chỉ nhận chương khi không truyện nào khác trúng tên. Trả {id, sure}: sure = trội hẳn, được cộng điểm thể loại.
+var GUESS_MIN = 1, GUESS_RATIO = 2, SURE_MIN = 2, SURE_RATIO = 3;
 function guessBook(store, text, noBootstrap) {
     // Bản 22 chỉ xét truyện dùng trong 30 phút và bỏ cuộc khi lượt gần nhất quá hạn: log iPhone 24/9 sau một đêm nghỉ, truyện
     // võ hiệp (nguồn không lặp tên chương) không bao giờ được xét lại vì không có gì làm mới `used` → 60 chương "none".
@@ -614,26 +668,33 @@ function guessBook(store, text, noBootstrap) {
         cands.push({ id: id, book: book, keys: keys, hasKeys: hasKeys, score: 0 });
     }
     if (cands.length === 0) return null;
-    var owners = {};
-    for (var c = 0; c < cands.length; c++) { for (var k in cands[c].keys) owners[k] = (owners[k] || 0) + 1; }
+    // Trọng số cao nhất và nhì của mỗi tên qua mọi truyện.
+    var top = {}, top2 = {};
+    for (var c = 0; c < cands.length; c++) {
+        for (var k in cands[c].keys) {
+            var w = cands[c].keys[k];
+            if (w > (top[k] || 0)) { top2[k] = top[k] || 0; top[k] = w; }
+            else if (w > (top2[k] || 0)) top2[k] = w;
+        }
+    }
     var best = null, second = null;
     for (var c2 = 0; c2 < cands.length; c2++) {
         var cand = cands[c2];
-        for (var k2 in cand.keys) { if (owners[k2] === 1 && s.indexOf(k2) > -1) cand.score += cand.keys[k2]; }
+        for (var k2 in cand.keys) {
+            if (s.indexOf(k2) < 0) continue;
+            var own = cand.keys[k2], other = own >= top[k2] ? (top2[k2] || 0) : top[k2];
+            if (own > other) cand.score += own - other;
+        }
         if (!best || cand.score > best.score) { second = best; best = cand; }
         else if (!second || cand.score > second.score) second = cand;
     }
     if (!best) return null;
     var secondScore = second ? second.score : 0;
-    // Trội hẳn: gấp đôi truyện nhì hoặc hơn 3 điểm; "chắc" (được cộng điểm thể loại) từ 2,5 điểm khi gấp ba hoặc hơn 4.
-    if (best.score >= 2 && (best.score >= 2 * secondScore || best.score - secondScore >= 3)) {
-        return { id: best.id, sure: best.score >= 2.5 && (best.score >= 3 * secondScore || best.score - secondScore >= 4) };
+    if (best.score >= GUESS_MIN && best.score >= GUESS_RATIO * secondScore) {
+        return { id: best.id, sure: best.score >= SURE_MIN && best.score >= SURE_RATIO * secondScore };
     }
-    // Trúng một tên mà truyện khác không trúng tên nào: nhận nhưng chưa chắc (truyện mới bộ tên còn mỏng).
-    if (best.score >= 1 && secondScore === 0) return { id: best.id, sure: false };
-    if (best.score >= 1) return null;
-    // Dưới 1 điểm (chỉ trúng từ chung nửa điểm) coi như không trúng.
-    // Không truyện nào trúng tên then chốt. Truyện chưa có bộ tên (vừa mở, hoặc vừa lên bản mới) nhận chương để bắt đầu
+    if (best.score >= GUESS_MIN) return null;
+    // Dưới GUESS_MIN coi như không trúng tên nào (một từ chung của QT như 皇帝 chỉ 0,5). Truyện chưa có bộ tên (vừa mở, hoặc vừa lên bản mới) nhận chương để bắt đầu
     // học: xếp theo số tên trong bảng tên thường có mặt, rồi theo lượt dùng gần nhất. Bản 22 bỏ qua truyện có bảng tên mà
     // không trúng chữ nào → truyện có bảng tên cũ (bản 21) không bao giờ được nhận chương, không học được bộ tên (iPhone
     // 23/9: 20 chương 全职艺术家 liền "none").
