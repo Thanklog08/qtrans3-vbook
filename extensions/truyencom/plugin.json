@@ -1,0 +1,36 @@
+{
+  "metadata": {
+    "id": "truyencom-bbook",
+    "name": "Truyencom (Cedric)",
+    "author": "BBook",
+    "version": 1,
+    "source": "https://truyencom.com",
+    "regexp": "https?://(www\\.)?(truyencom|truyenhoan)\\.com/[a-z0-9-]+\\.\\d+/?$",
+    "description": "Đọc truyện trên truyencom.com (dtruyen, webtruyen cũ gộp về đây), khoảng 23 nghìn truyện dịch/convert. Mạng chặn truyencom thì chọn truyenhoan.com (cùng nội dung) trong cài đặt tiện ích.",
+    "locale": "vi_VN",
+    "type": "novel",
+    "language": "javascript"
+  },
+  "script": {
+    "home": "home.js",
+    "genre": "genre.js",
+    "detail": "detail.js",
+    "search": "search.js",
+    "page": "page.js",
+    "toc": "toc.js",
+    "chap": "chap.js"
+  },
+  "config": {
+    "domain": {
+      "title": "Tên miền",
+      "subtitle": "truyenhoan.com cùng nội dung với truyencom.com nhưng mã truyện khác; truyện đã lưu giữ tên miền cũ.",
+      "mode": "select",
+      "format": "single",
+      "values": [
+        "truyencom.com",
+        "truyenhoan.com"
+      ],
+      "default": "truyencom.com"
+    }
+  }
+}

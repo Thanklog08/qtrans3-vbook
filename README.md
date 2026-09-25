@@ -56,6 +56,24 @@ kho ở trên, trong danh sách tìm **Tàng Thư Viện (Cedric)**.
 
 Mã nguồn phát triển: `vbook-ext/extensions/tangthuvien-org` (ghi chú `docs/notes/tangthuvien-org.md`).
 
+## Truyencom (Cedric)
+
+Đọc truyện trên `truyencom.com` (dtruyen, webtruyen cũ gộp về đây; khoảng 23 nghìn truyện dịch/convert), ở `extensions/truyencom/`.
+
+- Khám phá: Mới cập nhật, Mới đăng, Truyện hot, Truyện full; thể loại (chỉ truyện hoàn thành); tìm kiếm tối đa 25 kết quả.
+- Mạng chặn truyencom.com thì vào cài đặt tiện ích, mục **Tên miền**, chọn `truyenhoan.com` (cùng nội dung, mã truyện khác;
+  truyện đã lưu giữ tên miền cũ).
+
+## Faloo 飞卢 (Cedric)
+
+Đọc truyện Trung trên 飞卢小说网 (bản `wap.faloo.com`), ở `extensions/faloo/`. Dùng kèm tiện ích dịch (B-Qtrans…).
+
+- Khám phá: 最新, 周点击, 总点击, 周收藏, 完本, 同人; 24 thể loại; tìm kiếm bằng chữ Hán (tiện ích tự mã hoá GBK).
+- Hầu hết truyện là VIP: chỉ đọc được vài chục chương đầu; chương VIP có biểu tượng trả phí và chỉ hiện một dòng ghi chú.
+
+Mã nguồn phát triển: `vbook-ext/extensions/truyencom-bbook`, `vbook-ext/extensions/faloo-bbook` (ghi chú
+`docs/notes/truyencom-faloo-hako.md`).
+
 ## Cập nhật repo này từ bản phát triển
 
 Mã nguồn thật nằm trong repo phát triển (`vbook-ext/extensions/qtrans3-cedric`). Để đẩy bản mới:

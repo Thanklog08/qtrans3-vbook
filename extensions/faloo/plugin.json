@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "id": "faloo-bbook",
+    "name": "Faloo 飞卢 (Cedric)",
+    "author": "BBook",
+    "version": 1,
+    "source": "https://wap.faloo.com",
+    "regexp": "https?://(b|wap)\\.faloo\\.com/\\d+\\.html$",
+    "description": "Đọc truyện Trung trên 飞卢小说网 (bản wap.faloo.com): hệ thống, đồng nhân, huyền huyễn… Phần lớn truyện chỉ mở vài chục chương đầu, chương VIP đánh dấu trả phí (cần tài khoản và mua trên faloo). Dùng kèm tiện ích dịch.",
+    "locale": "zh_CN",
+    "type": "chinese_novel",
+    "language": "javascript"
+  },
+  "script": {
+    "home": "home.js",
+    "genre": "genre.js",
+    "detail": "detail.js",
+    "search": "search.js",
+    "page": "page.js",
+    "toc": "toc.js",
+    "chap": "chap.js"
+  }
+}
