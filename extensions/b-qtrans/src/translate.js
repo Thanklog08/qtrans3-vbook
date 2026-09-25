@@ -328,6 +328,9 @@ function callGeminiAPI(text, prompt, apiKey, model) {
             if (choice) { return { status: "blocked", message: "Bị chặn hoặc không có nội dung trả về (finish_reason: " + choice.finish_reason + ")." }; }
             return { status: "error", message: "API không trả về nội dung hợp lệ. Phản hồi: " + stripCedricUsage(responseText) };
         } else {
+            if (response.status === 429) {
+                return { status: "rate_limited", coolMs: coolMsFromBody(responseText), message: "Lỗi HTTP 429 (hết lượt). Phản hồi từ server:\n" + responseText };
+            }
             var status = (response.status === 401 || response.status === 403) ? "key_error" : "error";
             if (!responseText.trim()) {
                 // vBook trả 504 không có thân khi không kết nối được tới máy chủ.
@@ -363,6 +366,11 @@ function translateChunkWithApiRetry(chunkText, prompt, modelToUse, keysToTry, mi
         }
         
         keyErrors.push("  + Key " + (i + 1) + " (" + apiKeyToUse.substring(0, 4) + "...):\n    " + result.message.replace(/\n/g, '\n    '));
+        // Hết lượt là của cả Cedric (mọi khoá client dùng chung account phía sau): model nghỉ, không thử khoá khác.
+        if (result.status === "rate_limited") {
+            coolSet(modelToUse, result.coolMs);
+            return { status: "rate_limited", message: "Model " + modelToUse + " hết lượt (429).", details: keyErrors };
+        }
 
         if (i < keysToTry.length - 1) {
             try { sleep(100); } catch (e) {}
@@ -479,6 +487,8 @@ function translateList(text, to, keys) {
         var map = null;
         var errors = [];
         for (var m = 0; m < loop.length && !map; m++) {
+            var listCool = coolUntil(loop[m]);
+            if (listCool) { errors.push(loop[m] + ": tạm nghỉ tới " + clockText(listCool) + " (429)"); continue; }
             // Danh sách ngắn: không áp ngưỡng độ dài (tên dịch có thể ngắn hơn chuỗi đánh số).
             var r = translateChunkWithApiRetry(numbered.join("\n"), basePrompt, loop[m], keys, 0.01);
             if (r.status === "success") {
@@ -804,6 +814,8 @@ function translateText(text, from, to) {
 
         for (var m = 0; m < modelsToIterate.length; m++) {
             var currentModel = modelsToIterate[m];
+            var coolTill = coolUntil(currentModel);
+            if (coolTill) { errorLog[currentModel] = ["  + tạm nghỉ tới " + clockText(coolTill) + " (Cedric báo 429 hết lượt), không gọi"]; continue; }
             // v2 chia 1500–4000 ký tự vì gọi Gemini công khai; qua Cedric các model đều nhận chương dài, và
             // càng ít đoạn thì càng giữ được ngữ cảnh. Mặc định 6000 (đa số chương đi một lượt), đổi ở cài đặt.
             var CHUNK_SIZE = configChunkSize();
@@ -887,7 +899,7 @@ function translateText(text, from, to) {
             }
         } 
 
-        if (!translationSuccessful && useModelLoop && !isPinyinRoute) {
+        if (!translationSuccessful && useModelLoop && !isPinyinRoute && !coolUntil(modelsToIterate[0])) {
             var minimal = "Dịch văn bản dưới đây sang tiếng Việt tự nhiên, đầy đủ từng câu, giữ nguyên xuống dòng. Chỉ trả bản dịch.";
             var lastTry = translateChunkWithApiRetry(text, minimal, modelsToIterate[0], rotatedApiKeys, 0.8);
             if (lastTry.status === "success") {
