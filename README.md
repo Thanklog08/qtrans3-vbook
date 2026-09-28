@@ -19,7 +19,7 @@ cài và tự cập nhật.
 | **Tàng Thư Viện (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên tangthuvien.org. Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; tiện ích không vượt khoá. |
 | **Truyencom (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên truyencom.com. Mạng chặn trang này thì chọn `truyenhoan.com` ở ô **Tên miền** trong cài đặt. |
 | **Faloo 飞卢 (Cedric)** | Nguồn tiếng Trung | Đọc truyện trên wap.faloo.com. Phần lớn truyện là VIP: chỉ đọc được vài chục chương đầu. |
-| **Sói Xám 大灰狼 (Cedric)** | Nguồn tiếng Trung | Đọc Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách… qua máy chủ Sói Xám; khám phá và thể loại tên tiếng Việt, tìm một lượt trên mọi nền tảng. **Khách chỉ đọc 3 chương mỗi ngày**: nhập email + mật khẩu tài khoản Sói Xám trong cài đặt tiện ích để đọc tiếp. |
+| **Sói Xám 大灰狼 (Cedric)** | Nguồn tiếng Trung | Đọc Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách… qua máy chủ Sói Xám. Khám phá theo bảng xếp hạng Fanqie; Thể loại có "Cà Chua" và "Nguồn khác" cho từng mục; **ô tìm kiếm lọc được hơn 370 thể loại bằng tiếng Việt không dấu** (vd. `tu tien`, `trong sinh`; thêm `@khac` để tìm ở nguồn khác); trang truyện có "Cùng tác giả". **Khách chỉ đọc 3 chương mỗi ngày**: nhập email + mật khẩu (hoặc token) Sói Xám trong cài đặt tiện ích để đọc tiếp. |
 
 Nguồn tiếng Trung dùng kèm một tiện ích dịch (B-Qtrans hoặc tiện ích khác).
 
