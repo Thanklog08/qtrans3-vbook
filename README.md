@@ -74,6 +74,22 @@ Mã nguồn phát triển: `vbook-ext/extensions/tangthuvien-org` (ghi chú `doc
 Mã nguồn phát triển: `vbook-ext/extensions/truyencom-bbook`, `vbook-ext/extensions/faloo-bbook` (ghi chú
 `docs/notes/truyencom-faloo-hako.md`).
 
+## Sói Xám 大灰狼 (Cedric)
+
+Đọc truyện Trung qua máy chủ Sói Xám (大灰狼): Fanqie, Qimao, QQ Đọc, Shuqi…, ở `extensions/soixam/`. Dùng kèm tiện ích dịch
+(B-Qtrans…).
+
+- Khám phá: 9 bảng xếp hạng Fanqie (Đề cử, Đọc nhiều, Đỉnh phong, Hoàn thành, Sách mới, Hắc mã…) và thể loại tên tiếng Việt, cộng
+  nhóm Chủ đề/Nhân vật; kênh **Nam / Nữ / Cả hai** chọn trong cài đặt tiện ích.
+- Tìm kiếm một lượt trên mọi nền tảng (hoặc chỉ Fanqie, trong cài đặt); mỗi truyện ghi nền tảng, trạng thái, số chữ, điểm, thể loại.
+  Gõ `tên@nền tảng` (vd. `诡秘之主@QQ阅读`) để tìm riêng một nền tảng. Dán link `fanqienovel.com/page/…` cũng mở được.
+- Trang truyện ghi tiếng Việt: nền tảng, thể loại, trạng thái, độ dài, điểm, lượt đọc, nhân vật chính, chương mới nhất.
+- Máy chủ lỗi thì tự đổi sang máy khác; truyện đã lưu không hỏng khi Sói Xám đổi tên miền.
+- **Khách chỉ đọc được 3 chương mỗi ngày.** Đăng nhập: trong vBook mở trình duyệt tới `https://v5.langge.uk/login` (hoặc máy chủ đã
+  chọn trong cài đặt), đăng nhập tài khoản Sói Xám rồi tải lại chương; hoặc dán token (cookie `qttoken`) vào cài đặt tiện ích.
+
+Mã nguồn phát triển: `vbook-ext/extensions/soixam-bbook` (ghi chú `docs/notes/soixam.md`).
+
 ## Cập nhật repo này từ bản phát triển
 
 Mã nguồn thật nằm trong repo phát triển (`vbook-ext/extensions/qtrans3-cedric`). Để đẩy bản mới:

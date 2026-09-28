@@ -1,7 +1,7 @@
 {
     "metadata": {
         "author": "BBook",
-        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web) và các nguồn đọc truyện Kỳ Huyễn, Tàng Thư Viện, Truyencom, Faloo 飞卢"
+        "description": "Kho tiện ích BBook cho vBook: B-Qtrans (dịch qua Cedric Web) và các nguồn đọc truyện Kỳ Huyễn, Tàng Thư Viện, Truyencom, Faloo 飞卢, Sói Xám 大灰狼"
     },
     "data": [
         {
@@ -56,6 +56,17 @@
             "source": "https://wap.faloo.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/faloo/icon.png",
             "description": "Đọc truyện Trung trên 飞卢小说网 (bản wap.faloo.com): hệ thống, đồng nhân, huyền huyễn… Phần lớn truyện chỉ mở vài chục chương đầu, chương VIP đánh dấu trả phí (cần tài khoản và mua trên faloo). Dùng kèm tiện ích dịch.",
+            "type": "chinese_novel",
+            "locale": "zh_CN"
+        },
+        {
+            "name": "Sói Xám 大灰狼 (Cedric)",
+            "author": "BBook",
+            "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/soixam/plugin.zip",
+            "version": 1,
+            "source": "https://v5.langge.uk",
+            "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/soixam/icon.png",
+            "description": "Đọc truyện Trung qua máy chủ Sói Xám (大灰狼, bản 5.9.26): Fanqie, Qimao, QQ Đọc, Shuqi… Khám phá theo bảng xếp hạng và thể loại Fanqie (tên tiếng Việt, chọn kênh Nam/Nữ trong cài đặt); tìm một lượt trên mọi nền tảng, mỗi truyện ghi nền tảng, trạng thái, số chữ, điểm. Máy chủ lỗi thì tự đổi máy. Khách đọc được vài chương mỗi ngày: đăng nhập ở <máy chủ>/login trong trình duyệt của vBook (hoặc dán token vào cài đặt). Dán link fanqienovel.com/page/… cũng mở được.",
             "type": "chinese_novel",
             "locale": "zh_CN"
         }
