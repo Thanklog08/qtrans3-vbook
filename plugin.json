@@ -63,10 +63,10 @@
             "name": "Sói Xám 大灰狼 (Cedric)",
             "author": "BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/soixam/plugin.zip",
-            "version": 3,
+            "version": 4,
             "source": "https://v5.langge.uk",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/soixam/icon.png",
-            "description": "Đọc truyện Trung qua máy chủ Sói Xám (大灰狼): Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách, Thư Kỳ… Khám phá: 9 bảng xếp hạng Fanqie; Thể loại: thể loại chính của Fanqie (tên tiếng Việt), mỗi mục có \"Cà Chua\" (danh sách Fanqie) và \"Nguồn khác\" (tìm theo tên thể loại ở các nền tảng khác). Ô tìm kiếm kiêm bộ lọc hơn 370 thể loại: gõ tên tiếng Việt/Hán-Việt, không dấu cũng được (vd. tu tien, trong sinh, xuyen khong), thêm @khac để tìm ở nguồn khác. Trang truyện có \"Cùng tác giả\". Khách chỉ đọc 3 chương mỗi ngày: nhập email + mật khẩu (hoặc token) Sói Xám trong cài đặt tiện ích.",
+            "description": "Đọc truyện Trung qua máy chủ Sói Xám (大灰狼): Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách, Thư Kỳ… Khám phá: 9 bảng xếp hạng Fanqie; Thể loại: đủ danh mục Fanqie của kênh đang chọn, 4 phần Chính · Chủ đề · Nhân vật · Tình tiết (nam 172, nữ 199 mục, tên tiếng Việt, xếp ABC), mỗi mục có \"Cà Chua\" (danh sách Fanqie) và \"Nguồn khác\" (tìm theo tên thể loại ở các nền tảng khác). Ô tìm kiếm kiêm bộ lọc hơn 370 thể loại: gõ tên tiếng Việt/Hán-Việt, không dấu cũng được (vd. tu tien, trong sinh, xuyen khong), thêm @khac để tìm ở nguồn khác. Trang truyện có \"Cùng tác giả\". Khách chỉ đọc 3 chương mỗi ngày: nhập email + mật khẩu (hoặc token) Sói Xám trong cài đặt tiện ích.",
             "type": "chinese_novel",
             "locale": "zh_CN"
         }
