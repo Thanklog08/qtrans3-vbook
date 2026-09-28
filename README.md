@@ -1,104 +1,33 @@
-# B-Qtrans — kho tiện ích dịch cho vBook
+# B-Qtrans — kho tiện ích vBook
 
-Tiện ích dịch của vBook: dịch truyện Trung sang tiếng Việt bằng model gọi qua Cedric Web (API chuẩn OpenAI,
-`/v1/chat/completions`). Đây là bản phát hành của Q-trans 3; repo này chỉ tồn tại để vBook **tự cập nhật** được,
-không phải nơi phát triển.
+Kho tiện ích cho vBook: tiện ích dịch **B-Qtrans** và vài nguồn đọc truyện. Repo chỉ chứa gói đã đóng (`plugin.zip`) để vBook
+cài và tự cập nhật.
 
-Tên và id ở đây (`B-Qtrans` / `b-qtrans`) **khác** bản nhập bằng file zip (`Q-trans 3 (Cedric)` / `qtrans3-cedric`),
-nên hai bản cài song song được, mỗi bản có cài đặt và bộ nhớ riêng — tiện để so sánh. Icon màu xanh lá để phân biệt.
-
-## Cài và cập nhật trong vBook
+## Cài và cập nhật
 
 1. Copy URL kho: `https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/plugin.json`
 2. vBook › **Cài đặt** › **Phần mở rộng** › **⋮** › **Kho lưu trữ** › **+**, dán URL.
-3. Quay lại danh sách, tìm **B-Qtrans**, bấm tải.
-4. Bản sau chỉ cần mở lại danh sách: version trong `plugin.json` tăng thì vBook hiện mục **Cập nhật**, bấm một lần là xong và **giữ nguyên cài đặt đã lưu** (đã kiểm trên vBook 1.0).
+3. Quay lại danh sách, tìm tên tiện ích, bấm tải.
+4. Có bản mới: mở lại danh sách, bấm **Cập nhật** — cài đặt đã lưu giữ nguyên. Xoá tiện ích là mất cài đặt của nó.
 
-Bản nhập từ file zip mang badge DEV và **không** nhận cập nhật từ kho — muốn dùng đường kho thì cài bản này.
-Xoá một tiện ích là mất luôn cài đặt đã lưu của nó.
+## Tiện ích
 
-## Phải tự nhập sau khi cài
+| Tiện ích | Loại | Ghi chú |
+| --- | --- | --- |
+| **B-Qtrans** | Dịch Trung → Việt | Dịch qua Cedric Web (API chuẩn OpenAI). Phải tự nhập trong cài đặt tiện ích: **Địa chỉ Cedric Web** (không có `/v1` ở cuối), **Khoá Cedric**, **Model**. Tiện ích không chứa khoá nào. |
+| **Kỳ Huyễn (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên kyhuyen.com (trang cũ q.kyhuyen.com đã ngừng). |
+| **Tàng Thư Viện (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên tangthuvien.org. Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; tiện ích không vượt khoá. |
+| **Truyencom (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên truyencom.com. Mạng chặn trang này thì chọn `truyenhoan.com` ở ô **Tên miền** trong cài đặt. |
+| **Faloo 飞卢 (Cedric)** | Nguồn tiếng Trung | Đọc truyện trên wap.faloo.com. Phần lớn truyện là VIP: chỉ đọc được vài chục chương đầu. |
+| **Sói Xám 大灰狼 (Cedric)** | Nguồn tiếng Trung | Đọc Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách… qua máy chủ Sói Xám; khám phá và thể loại tên tiếng Việt, tìm một lượt trên mọi nền tảng. **Khách chỉ đọc 3 chương mỗi ngày**: nhập email + mật khẩu tài khoản Sói Xám trong cài đặt tiện ích để đọc tiếp. |
 
-| Ô trong Settings của tiện ích | Ghi chú |
-| --- | --- |
-| **Kết nối · Địa chỉ Cedric Web** | Bắt buộc, để trống trong repo công khai. Không có `/v1` ở cuối. |
-| **Kết nối · Khoá Cedric** | `CEDRIC_API_KEY` của máy chủ bạn. Nhiều khoá thì xoay vòng. |
-| **Kết nối · Model** | Mặc định `antigravity-gemini-3.6-flash-high`. Trình đọc iPhone bỏ lượt sau ~30 giây nên đừng chọn model chậm (gpt/sonnet) khi đọc trực tiếp. |
-| **Dịch · Văn phong mặc định** | `auto` = tự nhận thể loại theo chữ Hán của chương, cộng dồn theo từng truyện. |
+Nguồn tiếng Trung dùng kèm một tiện ích dịch (B-Qtrans hoặc tiện ích khác).
 
-Tiện ích không chứa khoá nào: `src/apikey.js` không bao giờ được đóng gói.
+## Nguồn và ghi công
 
-## Kỳ Huyễn (Cedric)
-
-Bản sửa tiện ích "Dịch truyện tự động từ Qidian" của Đường đen (`duongden/vbook`, bản 3), nằm ở `extensions/kyhuyen/`.
-Cùng kho ở trên, trong danh sách tìm **Kỳ Huyễn (Cedric)** (bản 4–5 tên là "Kỳ Huyễn (Dịch tự động từ Qidian)").
-
-- Trang `q.kyhuyen.com` đã ngừng (mọi đường dẫn trả 404); bản này dùng `kyhuyen.com`, link cũ tự đổi sang tên miền mới.
-- Chương: bỏ watermark ẩn (`<span class="d-none">`, link `KyHuyen.com` kèm dấu chấm đầu dòng, cả chương dạng `<p>` lẫn `<br>`) và quảng cáo chèn giữa bài.
-- Mục lục: bỏ tab "10 chương mới nhất" xếp ngược nên không còn chương lặp và sai thứ tự ở đầu.
-- Danh mục (Mới cập nhật, Đọc nhiều…) và 16 thể loại theo bộ lọc của trang mới; tên truyện không còn dính nhãn "WIKI"/"TTV".
-- Tên tác giả viết hoa đầu mỗi chữ ("Khách Sơn Thanh Lộc" thay vì "Khách sơn thanh lộc") ở danh sách và chi tiết.
-
-Mã nguồn phát triển: `vbook-ext/extensions/kyhuyen-bbook`; đóng gói bằng `python tools/build_ext.py` của repo đó.
-
-## Tàng Thư Viện (Cedric)
-
-Đọc truyện trên `tangthuvien.org` (trang web mới của Tàng Thư Viện, khác app cũ), nằm ở `extensions/tangthuvien/`. Cùng
-kho ở trên, trong danh sách tìm **Tàng Thư Viện (Cedric)**.
-
-- Khám phá: Mới cập nhật, Truyện mới, Thịnh hành, Đề cử, xếp hạng tuần/tháng/mọi lúc, Theo dõi nhiều, Hoàn thành; tìm kiếm
-  (gõ không dấu cũng được) và thể loại.
-- Trang truyện hiện 50 chương đầu; bấm **Xem tất cả** để nạp hết mục lục (site trả 50 chương mỗi lượt, truyện rất dài cần
-  một lúc).
-- Chương khoá có biểu tượng trả phí. Truyện "độc quyền dịch" trên web chỉ mở khoảng 100 chương đầu, chương sau chỉ hiện
-  đoạn đầu kèm ghi chú; bản đầy đủ đọc trong app của site. Tiện ích không vượt khoá.
-- Site chỉ lọc được 49 thể loại; Tiên hiệp, Đô thị, Xuyên không… không lọc được nên chỉ ghi trong phần thông tin truyện.
-
-Mã nguồn phát triển: `vbook-ext/extensions/tangthuvien-org` (ghi chú `docs/notes/tangthuvien-org.md`).
-
-## Truyencom (Cedric)
-
-Đọc truyện trên `truyencom.com` (dtruyen, webtruyen cũ gộp về đây; khoảng 23 nghìn truyện dịch/convert), ở `extensions/truyencom/`.
-
-- Khám phá: Mới cập nhật, Mới đăng, Truyện hot, Truyện full; thể loại (chỉ truyện hoàn thành); tìm kiếm tối đa 25 kết quả.
-- Mạng chặn truyencom.com thì vào cài đặt tiện ích, mục **Tên miền**, chọn `truyenhoan.com` (cùng nội dung, mã truyện khác;
-  truyện đã lưu giữ tên miền cũ).
-
-## Faloo 飞卢 (Cedric)
-
-Đọc truyện Trung trên 飞卢小说网 (bản `wap.faloo.com`), ở `extensions/faloo/`. Dùng kèm tiện ích dịch (B-Qtrans…).
-
-- Khám phá: 最新, 周点击, 总点击, 周收藏, 完本, 同人; 24 thể loại; tìm kiếm bằng chữ Hán (tiện ích tự mã hoá GBK).
-- Hầu hết truyện là VIP: chỉ đọc được vài chục chương đầu; chương VIP có biểu tượng trả phí và chỉ hiện một dòng ghi chú.
-
-Mã nguồn phát triển: `vbook-ext/extensions/truyencom-bbook`, `vbook-ext/extensions/faloo-bbook` (ghi chú
-`docs/notes/truyencom-faloo-hako.md`).
-
-## Sói Xám 大灰狼 (Cedric)
-
-Đọc truyện Trung qua máy chủ Sói Xám (大灰狼): Fanqie, Qimao, QQ Đọc, Shuqi…, ở `extensions/soixam/`. Dùng kèm tiện ích dịch
-(B-Qtrans…).
-
-- Khám phá: 9 bảng xếp hạng Fanqie (Đề cử, Đọc nhiều, Đỉnh phong, Hoàn thành, Sách mới, Hắc mã…) và thể loại tên tiếng Việt, cộng
-  nhóm Chủ đề/Nhân vật; kênh **Nam / Nữ / Cả hai** chọn trong cài đặt tiện ích.
-- Tìm kiếm một lượt trên mọi nền tảng (hoặc chỉ Fanqie, trong cài đặt); mỗi truyện ghi nền tảng, trạng thái, số chữ, điểm, thể loại.
-  Gõ `tên@nền tảng` (vd. `诡秘之主@QQ阅读`) để tìm riêng một nền tảng. Dán link `fanqienovel.com/page/…` cũng mở được.
-- Trang truyện ghi tiếng Việt: nền tảng, thể loại, trạng thái, độ dài, điểm, lượt đọc, nhân vật chính, chương mới nhất.
-- Máy chủ lỗi thì tự đổi sang máy khác; truyện đã lưu không hỏng khi Sói Xám đổi tên miền.
-- **Khách chỉ đọc được 3 chương mỗi ngày.** Đăng nhập: trong vBook mở trình duyệt tới `https://v5.langge.uk/login` (hoặc máy chủ đã
-  chọn trong cài đặt), đăng nhập tài khoản Sói Xám rồi tải lại chương; hoặc dán token (cookie `qttoken`) vào cài đặt tiện ích.
-
-Mã nguồn phát triển: `vbook-ext/extensions/soixam-bbook` (ghi chú `docs/notes/soixam.md`).
-
-## Cập nhật repo này từ bản phát triển
-
-Mã nguồn thật nằm trong repo phát triển (`vbook-ext/extensions/qtrans3-cedric`). Để đẩy bản mới:
-
-```
-python tools/sync_from_dev.py                    # hoặc: python tools/sync_from_dev.py <đường dẫn ext>
-git add -A && git commit -m "B-Qtrans v<N>" && git push
-```
-
-`sync_from_dev.py` chép `plugin.json` + `src/*.js`, đổi `metadata.name`/`id` sang B-Qtrans/b-qtrans, xoá trắng ô Địa
-chỉ Cedric, dựng lại `plugin.zip` và đồng bộ `version` trong kho. Nó **không** chép `icon.png` (icon ở đây đã đổi
-màu). Tự sửa file ở đây rồi quên bên kia thì lần sync sau bị ghi đè.
+- Bộ công cụ phát triển và khuôn tiện ích: [dat-bi/ext-vbook](https://github.com/dat-bi/ext-vbook).
+- **B-Qtrans**: phát triển tiếp từ tiện ích dịch Q-trans 2 của cộng đồng vBook, dùng bộ từ điển Quick Translator (QT).
+- **Kỳ Huyễn (Cedric)**: bản sửa tiện ích "Dịch truyện tự động từ Qidian" của Đường đen ([duongden/vbook](https://github.com/duongden/vbook)).
+- **Sói Xám 大灰狼 (Cedric)**: dữ liệu và API của máy chủ Sói Xám (大灰狼, langge); cách gọi API theo nguồn đọc truyện "大灰狼聚合"
+  cho app Legado. Tài khoản, giới hạn đọc và nội dung do máy chủ Sói Xám quản lý.
+- Nội dung truyện thuộc về tác giả và các trang/nền tảng gốc; các tiện ích chỉ hiển thị nội dung những trang đó cung cấp.

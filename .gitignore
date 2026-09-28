@@ -1,3 +1,6 @@
 **/src/apikey.js
 .env
 __pycache__/
+# Chỉ đưa lên GitHub gói đã đóng (plugin.zip) và icon: mã rời + plugin.json của từng tiện ích để ở máy (tools/ đóng gói từ đó).
+extensions/*/src/
+extensions/*/plugin.json

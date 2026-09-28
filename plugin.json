@@ -63,10 +63,10 @@
             "name": "Sói Xám 大灰狼 (Cedric)",
             "author": "BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/soixam/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://v5.langge.uk",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/soixam/icon.png",
-            "description": "Đọc truyện Trung qua máy chủ Sói Xám (大灰狼, bản 5.9.26): Fanqie, Qimao, QQ Đọc, Shuqi… Khám phá theo bảng xếp hạng và thể loại Fanqie (tên tiếng Việt, chọn kênh Nam/Nữ trong cài đặt); tìm một lượt trên mọi nền tảng, mỗi truyện ghi nền tảng, trạng thái, số chữ, điểm. Máy chủ lỗi thì tự đổi máy. Khách đọc được vài chương mỗi ngày: đăng nhập ở <máy chủ>/login trong trình duyệt của vBook (hoặc dán token vào cài đặt). Dán link fanqienovel.com/page/… cũng mở được.",
+            "description": "Đọc truyện Trung qua máy chủ Sói Xám (大灰狼, bản 5.9.26): Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách, Thư Kỳ… Khám phá theo bảng xếp hạng và thể loại Fanqie (tên tiếng Việt, chọn kênh Nam/Nữ trong cài đặt); tìm một lượt trên mọi nền tảng, mỗi truyện ghi nền tảng, trạng thái, số chữ, điểm. Máy chủ lỗi thì tự đổi máy. Khách chỉ đọc 3 chương mỗi ngày: nhập email + mật khẩu Sói Xám trong cài đặt tiện ích để tự đăng nhập. Dán link fanqienovel.com/page/… cũng mở được.",
             "type": "chinese_novel",
             "locale": "zh_CN"
         }
