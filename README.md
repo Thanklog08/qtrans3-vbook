@@ -16,8 +16,8 @@ cài và tự cập nhật.
 | --- | --- | --- |
 | **B-Qtrans** | Dịch Trung → Việt | Dịch qua Cedric Web (API chuẩn OpenAI). Phải tự nhập trong cài đặt tiện ích: **Địa chỉ Cedric Web** (không có `/v1` ở cuối), **Khoá Cedric**, **Model**. Tiện ích không chứa khoá nào. |
 | **Kỳ Huyễn (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên kyhuyen.com (trang cũ q.kyhuyen.com đã ngừng). |
-| **Tàng Thư Viện (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên tangthuvien.org. Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; tiện ích không vượt khoá. |
-| **Truyencom (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên truyencom.com. Mạng chặn trang này thì chọn `truyenhoan.com` ở ô **Tên miền** trong cài đặt. |
+| **Tàng Thư Viện (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên tangthuvien.org. Truyện độc quyền dịch chỉ mở khoảng 100 chương đầu trên web; tiện ích không vượt khoá. Mạng chặn trang này: nhập khoá thiết bị B-trans trong cài đặt để máy chủ B-trans tải hộ. |
+| **Truyencom (Cedric)** | Nguồn tiếng Việt | Đọc truyện trên wetruyen.com (truyencom.com cũ chuyển sang, không bị chặn). Truyện đã lưu ở truyencom.com: nhập khoá thiết bị B-trans để máy chủ B-trans tải hộ. |
 | **Faloo 飞卢 (Cedric)** | Nguồn tiếng Trung | Đọc truyện trên wap.faloo.com. Phần lớn truyện là VIP: chỉ đọc được vài chục chương đầu. |
 | **Sói Xám 大灰狼 (Cedric)** | Nguồn tiếng Trung | Đọc Cà Chua (Fanqie), Thất Miêu (Qimao), QQ Đọc Sách… qua máy chủ Sói Xám. Khám phá theo bảng xếp hạng Fanqie; Thể loại liệt kê đủ danh mục Fanqie (4 phần Chính · Chủ đề · Nhân vật · Tình tiết), mỗi mục có "Cà Chua" và "Nguồn khác"; **ô tìm kiếm lọc được hơn 370 thể loại bằng tiếng Việt không dấu** (vd. `tu tien`, `trong sinh`; thêm `@khac` để tìm ở nguồn khác); trang truyện có đủ thể loại Fanqie và "Cùng tác giả". **Khách chỉ đọc 3 chương mỗi ngày**: nhập email + mật khẩu (hoặc token) Sói Xám trong cài đặt tiện ích để đọc tiếp. |
 
