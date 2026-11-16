@@ -33,17 +33,30 @@ Các tiện ích dưới đây **không phải của BBook**: chép nguyên từ
 | **168txt** | Truyện mạng | www.168txt.cc | [SoulGodEve9x9/Vbook-ext](https://github.com/SoulGodEve9x9/Vbook-ext) |
 | **1qxs** | Truyện mạng | www.1qxs.com | [buudvh/leech_story_ext](https://github.com/buudvh/leech_story_ext) |
 | **85 Novel** | Truyện mạng | www.85novel.com | [duongden/vbook](https://github.com/duongden/vbook) |
+| **Bqgoo** | Truyện mạng | www.bqgooo.cc | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **bqquge** | Truyện mạng | www.bqquge.com | [buudvh/leech_story_ext](https://github.com/buudvh/leech_story_ext) |
+| **CiWeiMao 【刺猬猫】** | Truyện mạng | www.ciweimao.com | [jokervtn94/vbook-ext](https://github.com/jokervtn94/vbook-ext) |
+| **Dingdian 【顶点】** | Truyện mạng | www.dingdian666.com | [jokervtn94/vbook-ext](https://github.com/jokervtn94/vbook-ext) |
+| **douyinxs** | Truyện mạng | m.douyinxs.com | [hung2143/vbook-ext-](https://github.com/hung2143/vbook-ext-) |
 | **[QQ] html5** | Truyện mạng | novel.html5.qq.com | [kychitoge/vbook-ext](https://github.com/kychitoge/vbook-ext) |
 | **idejian** | Truyện mạng | wechat.idejian.com | [buudvh/leech_story_ext](https://github.com/buudvh/leech_story_ext) |
 | **ihuaben** | Truyện mạng | www.ihuaben.com | [mizhm/vbook-extensions](https://github.com/mizhm/vbook-extensions) |
 | **ixdzs.tw** | Truyện mạng | ixdzs.tw | [BaoBao666888/ext-vbook-w](https://github.com/BaoBao666888/ext-vbook-w) |
+| **NovelCooksTW** | Truyện mạng | novel.cooks.tw | [hienpro00123/vbook_MeoU](https://github.com/hienpro00123/vbook_MeoU) |
+| **Piaotia** | Truyện mạng | www.piaotia.com | [tunneleven/vbook-extension](https://github.com/tunneleven/vbook-extension) |
 | **Qimao (七猫文化)** | Truyện mạng | www.qimao.com | [lethituyen/vbooks-extension](https://github.com/lethituyen/vbooks-extension) |
+| **QuanBen** | Truyện mạng | quanben5.com | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **全本小说网** | Truyện mạng | quanben-xiaoshuo.com | [andyhoangds/andy-vbook-ext](https://github.com/andyhoangds/andy-vbook-ext) |
+| **书本书** | Truyện mạng | www.shubenshu.com | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **shumilou** | Truyện mạng | www.shumilouxs.com | [Moleys/vbook-ext](https://github.com/Moleys/vbook-ext) |
+| **sto66** | Truyện mạng | www.sto66.com | [FFrelay/vbook-extensions](https://github.com/FFrelay/vbook-extensions) |
 | **sudugu** | Truyện mạng | www.sudugu.org | [buudvh/leech_story_ext](https://github.com/buudvh/leech_story_ext) |
+| **速读谷** | Truyện mạng | www.sudugu520.com | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **tushumi.cc** | Truyện mạng | www.tushumi.cc | [BaoBao666888/ext-vbook-w](https://github.com/BaoBao666888/ext-vbook-w) |
+| **uu看書** | Truyện mạng | www.uuread.tw | [mrvson/ext-vbook](https://github.com/mrvson/ext-vbook) |
 | **uushuk** | Truyện mạng | www.uushuk.com | [dat-bi/ext-vbook](https://github.com/dat-bi/ext-vbook) |
+| **Xiaoshuo TW** | Truyện mạng | www.xiaoshuo.com.tw | [tunneleven/vbook-extension](https://github.com/tunneleven/vbook-extension) |
+| **Zongheng** | Truyện mạng | www.zongheng.com | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **52shuku** | Đồng nhân / fanfic | www.52shuku.net | [Moleys/vbook-ext](https://github.com/Moleys/vbook-ext) |
 | **bixiange** | Đồng nhân / fanfic | www.bixiange.top | [Moleys/vbook-ext](https://github.com/Moleys/vbook-ext) |
 | **ffxs8** | Đồng nhân / fanfic | www.ffxs8.com | [Moleys/vbook-ext](https://github.com/Moleys/vbook-ext) |
