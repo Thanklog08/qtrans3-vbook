@@ -71,10 +71,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "168txt",
+            "name": "168txt (Cedric)",
             "author": "Nahona · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/168txt/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.168txt.cc/",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/168txt/icon.png",
             "description": "Fork từ github.com/SoulGodEve9x9/Vbook-ext (tác giả Nahona, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc.",
@@ -82,10 +82,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "1qxs",
+            "name": "1qxs (Cedric)",
             "author": "HuongMT · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/1qxs/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.1qxs.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/1qxs/icon.png",
             "description": "Fork từ github.com/buudvh/leech_story_ext (tác giả HuongMT, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang 1qxs.com",
@@ -93,10 +93,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "85 Novel",
+            "name": "85 Novel (Cedric)",
             "author": "Đường đen · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/85novel/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.85novel.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/85novel/icon.png",
             "description": "Fork từ github.com/duongden/vbook (tác giả Đường đen, bản 7). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang 85novel\n\nCONFIG GENRE\nfull = đầy đủ\nnam = Nam\nnữ = Nữ\nXB = Khác\n\nTải nhanh sẽ bị ban IP, set 1 luồng 30s",
@@ -104,10 +104,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "Bqgoo",
+            "name": "Bqgoo (Cedric)",
             "author": "MuseAi · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/bqgooo/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.bqgooo.cc",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/bqgooo/icon.png",
             "description": "Fork từ github.com/qsang2025/Qsang_vbook (tác giả MuseAi, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Bqgoo (bqgooo.cc) — truyện chữ giản thể miễn phí qua API JSON riêng (apibi.cc): huyền huyễn, võ hiệp, đô thị, lịch sử, võng du, khoa huyễn, nữ sinh, hoàn bản. Chương đọc miễn phí toàn văn, không khóa VIP; mục lục 7.854 chương với 夫人她马甲又轰动全城了. Site đã đổi domain bqgoo.cc → bqgooo.cc (domain cũ chuyển hướng 301).",
@@ -115,10 +115,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "bqquge",
+            "name": "bqquge (Cedric)",
             "author": "HuongMT · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/bqquge/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.bqquge.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/bqquge/icon.png",
             "description": "Fork từ github.com/buudvh/leech_story_ext (tác giả HuongMT, bản 4). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang bqquge.com",
@@ -126,10 +126,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "CiWeiMao 【刺猬猫】",
+            "name": "CiWeiMao 【刺猬猫】 (Cedric)",
             "author": "Jokervtn94 · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ciweimao/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.ciweimao.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ciweimao/icon.png",
             "description": "Fork từ github.com/jokervtn94/vbook-ext (tác giả Jokervtn94, bản 6). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. CiWeiMao: sửa lỗi encryt_keys undefined, xử lý CAPTCHA, phiên đăng nhập và chương VIP.",
@@ -137,10 +137,10 @@
             "locale": "cn-CN"
         },
         {
-            "name": "Dingdian 【顶点】",
+            "name": "Dingdian 【顶点】 (Cedric)",
             "author": "Jokervtn94 · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/dingdian666/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.dingdian666.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/dingdian666/icon.png",
             "description": "Fork từ github.com/jokervtn94/vbook-ext (tác giả Jokervtn94, bản 5). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Dingdian v5: lấy bìa truyện thực từ trang chi tiết cho danh sách; chuẩn hóa URL ảnh và hỗ trợ metadata dự phòng.",
@@ -148,10 +148,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "douyinxs",
+            "name": "douyinxs (Cedric)",
             "author": "Hung · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/douyinxs/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://m.douyinxs.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/douyinxs/icon.png",
             "description": "Fork từ github.com/hung2143/vbook-ext- (tác giả Hung, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc.",
@@ -159,10 +159,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "[QQ] html5",
+            "name": "[QQ] html5 (Cedric)",
             "author": "kychi · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/html5qq/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://novel.html5.qq.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/html5qq/icon.png",
             "description": "Fork từ github.com/kychitoge/vbook-ext (tác giả kychi, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. QQ浏览器小说接口书源",
@@ -170,10 +170,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "idejian",
+            "name": "idejian (Cedric)",
             "author": "HuongMT · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/idejian/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://wechat.idejian.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/idejian/icon.png",
             "description": "Fork từ github.com/buudvh/leech_story_ext (tác giả HuongMT, bản 21). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên idejian",
@@ -181,10 +181,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "ihuaben",
+            "name": "ihuaben (Cedric)",
             "author": "mizhm · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ihuaben/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.ihuaben.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ihuaben/icon.png",
             "description": "Fork từ github.com/mizhm/vbook-extensions (tác giả mizhm, bản 4). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. ihuaben",
@@ -192,10 +192,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "ixdzs.tw",
+            "name": "ixdzs.tw (Cedric)",
             "author": "QuocBao · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ixdzs/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://ixdzs.tw/",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ixdzs/icon.png",
             "description": "Fork từ github.com/BaoBao666888/ext-vbook-w (tác giả QuocBao, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên ixdzs8.com và ixdzs.tw",
@@ -203,10 +203,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "NovelCooksTW",
+            "name": "NovelCooksTW (Cedric)",
             "author": "Meo · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/novelcooks/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://novel.cooks.tw",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/novelcooks/icon.png",
             "description": "Fork từ github.com/hienpro00123/vbook_MeoU (tác giả Meo, bản 38). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. novel.cooks.tw - Đọc truyện chữ Trung Quốc online",
@@ -214,10 +214,10 @@
             "locale": "zh_TW"
         },
         {
-            "name": "Piaotia",
+            "name": "Piaotia (Cedric)",
             "author": "vBook · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/piaotia/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.piaotia.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/piaotia/icon.png",
             "description": "Fork từ github.com/tunneleven/vbook-extension (tác giả vBook, bản 9). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc tiểu thuyết tiếng Trung trên Piaotia",
@@ -225,10 +225,10 @@
             "locale": "zh-CN"
         },
         {
-            "name": "Qimao (七猫文化)",
+            "name": "Qimao (七猫文化) (Cedric)",
             "author": "Nhocconsr · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/qimao/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.qimao.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/qimao/icon.png",
             "description": "Fork từ github.com/lethituyen/vbooks-extension (tác giả Nhocconsr, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Qimao",
@@ -236,10 +236,10 @@
             "locale": "zh-CN"
         },
         {
-            "name": "QuanBen",
+            "name": "QuanBen (Cedric)",
             "author": "MuseAi · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/quanben5/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://quanben5.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/quanben5/icon.png",
             "description": "Fork từ github.com/qsang2025/Qsang_vbook (tác giả MuseAi, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. QuanBen — đọc truyện chữ tiếng Trung miễn phí (toàn bản, 3.800+ chương/truyện dài). Mặc định chạy trên quanben5.com: từ máy thật, quanben.io trả 403 + trang mặc định CentOS (đã kiểm chứng 2026-11-12) trong khi quanben5.com chạy bình thường; quanben.io vẫn để trong cài đặt DOMAIN cho máy nào mở được. Mục lục tĩnh đầy đủ ở xiaoshuo.html (không cần JSONP), tìm kiếm qua JSONP công khai của site, 16 thể loại. Port từ bản hajljnopera v3 (mã nguồn mở, không mã hóa) + viết lại theo hợp đồng vBook hiện tại; bản duongden v5 bị mã hóa (encrypt: true) nên không dùng được code của nó.",
@@ -247,10 +247,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "全本小说网",
+            "name": "全本小说网 (Cedric)",
             "author": "vBook · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/quanbenxs/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://quanben-xiaoshuo.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/quanbenxs/icon.png",
             "description": "Fork từ github.com/andyhoangds/andy-vbook-ext (tác giả vBook, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện chữ Trung trên 全本小说网, dịch Vietphrase trong app",
@@ -258,10 +258,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "书本书",
+            "name": "书本书 (Cedric)",
             "author": "MuseAi · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/shubenshu/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.shubenshu.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/shubenshu/icon.png",
             "description": "Fork từ github.com/qsang2025/Qsang_vbook (tác giả MuseAi, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. 书本书 — đọc truyện chữ tiếng Trung trên shubenshu.com. Chương đọc đủ, không cần đăng nhập. Port từ shubenshu v3 của yae-miko-313 (fork trên đĩa, đọc được, không mã hóa), viết lại hoàn toàn theo hợp đồng hiện tại.",
@@ -269,10 +269,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "shumilou",
+            "name": "shumilou (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/shumilou/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.shumilouxs.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/shumilou/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.shumilouxs.com",
@@ -280,10 +280,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "sto66",
+            "name": "sto66 (Cedric)",
             "author": "FFrelay · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sto66/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.sto66.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sto66/icon.png",
             "description": "Fork từ github.com/FFrelay/vbook-extensions (tác giả FFrelay, bản 7). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang sto66 (思兔阅读)",
@@ -291,10 +291,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "sudugu",
+            "name": "sudugu (Cedric)",
             "author": "HuongMT · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sudugu/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.sudugu.org",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sudugu/icon.png",
             "description": "Fork từ github.com/buudvh/leech_story_ext (tác giả HuongMT, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang sudugu.org",
@@ -302,10 +302,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "速读谷",
+            "name": "速读谷 (Cedric)",
             "author": "MuseAi · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sudugu520/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.sudugu520.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sudugu520/icon.png",
             "description": "Fork từ github.com/qsang2025/Qsang_vbook (tác giả MuseAi, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. 速读谷 — sudugu520.com: truyện chữ tiếng Trung đọc miễn phí, không cần đăng nhập: mục lục đầy đủ, chương chia nhiều trang được ghép đủ, tìm kiếm qua /i/sor.aspx. Viết mới từ khảo sát trực tiếp (không có base; rescan #10 đã kiểm chứng ch.1 苟在两界修仙 đầy đủ thật, 4 trang ghép).",
@@ -313,10 +313,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "tushumi.cc",
+            "name": "tushumi.cc (Cedric)",
             "author": "QuocBao · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/tushumi/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.tushumi.cc/",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/tushumi/icon.png",
             "description": "Fork từ github.com/BaoBao666888/ext-vbook-w (tác giả QuocBao, bản 4). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện ở www.tushumi.cc và m.tushumi.cc",
@@ -324,10 +324,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "uu看書",
+            "name": "uu看書 (Cedric)",
             "author": "vBook · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/uuread/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.uuread.tw",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/uuread/icon.png",
             "description": "Fork từ github.com/mrvson/ext-vbook (tác giả vBook, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện tiếng Trung phồn thể (玄幻, 仙俠, 都市...) trên uu看書",
@@ -335,10 +335,10 @@
             "locale": "zh-Hant"
         },
         {
-            "name": "uushuk",
+            "name": "uushuk (Cedric)",
             "author": "B · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/uushuk/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.uushuk.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/uushuk/icon.png",
             "description": "Fork từ github.com/dat-bi/ext-vbook (tác giả B, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện chữ Trung trên uu书库",
@@ -346,10 +346,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "Xiaoshuo TW",
+            "name": "Xiaoshuo TW (Cedric)",
             "author": "vBook · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/xiaoshuotw/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.xiaoshuo.com.tw",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/xiaoshuotw/icon.png",
             "description": "Fork từ github.com/tunneleven/vbook-extension (tác giả vBook, bản 5). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc tiểu thuyết tiếng Trung phồn thể trên Xiaoshuo TW",
@@ -357,10 +357,10 @@
             "locale": "zh-TW"
         },
         {
-            "name": "Zongheng",
+            "name": "Zongheng (Cedric)",
             "author": "MuseAi · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/zongheng/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.zongheng.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/zongheng/icon.png",
             "description": "Fork từ github.com/qsang2025/Qsang_vbook (tác giả MuseAi, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Zongheng (纵横中文网) — đọc truyện chữ tiếng Trung: bảng xếp hạng, tìm kiếm qua API JSON, chi tiết, mục lục đầy đủ (đánh dấu chương VIP), đọc chương thường. v2: duyệt theo 12 thể loại + 3 bảng xếp hạng bổ sung (畅销榜/推荐票榜/打赏榜) qua API app công khai của Zongheng. Chương VIP chỉ báo rõ cần mua trên web, không lấy được nội dung. Port từ zongheng v4 của hajljnopera (ref: hajljnopera).",
@@ -368,10 +368,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "52shuku",
+            "name": "52shuku (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/52shuku/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.52shuku.net",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/52shuku/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 11). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang https://www.52shuku.net",
@@ -379,10 +379,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "bixiange",
+            "name": "bixiange (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/bixiange/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.bixiange.top",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/bixiange/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 5). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.bixiange.top",
@@ -390,10 +390,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "ffxs8",
+            "name": "ffxs8 (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ffxs8/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.ffxs8.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ffxs8/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.ffxs8.com",
@@ -401,10 +401,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "fuxsb 👨‍❤️‍👨👩‍❤️‍👩",
+            "name": "fuxsb 👨‍❤️‍👨👩‍❤️‍👩 (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/fuxsb/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.fuxsb.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/fuxsb/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 7). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.fuxsb.com",
@@ -412,10 +412,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "jpxs123",
+            "name": "jpxs123 (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/jpxs123/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://jpxs123.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/jpxs123/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://jpxs123.com",
@@ -423,10 +423,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "Tinh Võ Tiểu Thuyết Mạng",
+            "name": "Tinh Võ Tiểu Thuyết Mạng (Cedric)",
             "author": "TuanHai03 · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/jwxs/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.jwxs.org",
             "icon": "",
             "description": "Fork từ github.com/TuanHai03/vbook-extensions (tác giả TuanHai03, bản 4). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. 精武小说网",
@@ -434,10 +434,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "powanjuan",
+            "name": "powanjuan (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/powanjuan/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.powanjuan.cc",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/powanjuan/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.powanjuan.cc",
@@ -445,10 +445,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "qbtr",
+            "name": "qbtr (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/qbtr/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.qbtr.cc",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/qbtr/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.qbtr.cc",
@@ -456,10 +456,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "sjks88",
+            "name": "sjks88 (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sjks88/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.sjks88.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sjks88/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.sjks88.com",
@@ -467,10 +467,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "kanunu8",
+            "name": "kanunu8 (Cedric)",
             "author": "B · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kanunu8/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.kanunu8.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/kanunu8/icon.png",
             "description": "Fork từ github.com/dat-bi/ext-vbook (tác giả B, bản 4). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang https://www.kanunu8.com",
@@ -478,10 +478,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "piaoyuxuan",
+            "name": "piaoyuxuan (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/piaoyuxuan/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.piaoyuxuan.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/piaoyuxuan/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang https://www.piaoyuxuan.com",
@@ -489,10 +489,10 @@
             "locale": "zh_CN"
         },
         {
-            "name": "Xbanxia",
+            "name": "Xbanxia (Cedric)",
             "author": "bexom · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/xbanxia/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://www.xbanxia.com/",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/xbanxia/icon.png",
             "description": "Fork từ github.com/B3x0m/vbook-ext (tác giả bexom, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang Xbanxia",
@@ -500,10 +500,10 @@
             "locale": "zh-CN"
         },
         {
-            "name": "book18",
+            "name": "book18 (Cedric)",
             "author": "Nahona · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/book18/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.book18.org",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/book18/icon.png",
             "description": "Fork từ github.com/SoulGodEve9x9/Vbook-ext (tác giả Nahona, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. V3: Fix lỗi load chapter mục thể loại",
@@ -512,10 +512,10 @@
             "tag": "nsfw"
         },
         {
-            "name": "h528",
+            "name": "h528 (Cedric)",
             "author": "Nahona · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/h528/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.h528.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/h528/icon.png",
             "description": "Fork từ github.com/SoulGodEve9x9/Vbook-ext (tác giả Nahona, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc.",
@@ -524,10 +524,10 @@
             "tag": "nsfw"
         },
         {
-            "name": "po18gv",
+            "name": "po18gv (Cedric)",
             "author": "Moleys · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/po18gv/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.po18gv.vip",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/po18gv/icon.png",
             "description": "Fork từ github.com/Moleys/vbook-ext (tác giả Moleys, bản 1). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang http://www.po18gv.vip",
@@ -536,10 +536,10 @@
             "tag": "nsfw"
         },
         {
-            "name": "sinodan",
+            "name": "sinodan (Cedric)",
             "author": "Nahona · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sinodan/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "http://www.sinodan.link",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/sinodan/icon.png",
             "description": "Fork từ github.com/SoulGodEve9x9/Vbook-ext (tác giả Nahona, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang sinodan",
@@ -548,10 +548,10 @@
             "tag": "nsfw"
         },
         {
-            "name": "xinyushuwu",
+            "name": "xinyushuwu (Cedric)",
             "author": "B · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/xinyushuwu/plugin.zip",
-            "version": 1,
+            "version": 2,
             "source": "https://m.xinyushuwu2.com",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/xinyushuwu/icon.png",
             "description": "Fork từ github.com/dat-bi/ext-vbook (tác giả B, bản 5). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên trang xinyushuwu. tác giả hajljnopera mà xóa rồi, dat-bi sửa",
