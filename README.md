@@ -50,7 +50,7 @@ Các tiện ích dưới đây **không phải của BBook**: chép nguyên từ
 | **书本书 (Cedric)** | Truyện mạng | www.shubenshu.com | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **shumilou (Cedric)** | Truyện mạng | www.shumilouxs.com | [Moleys/vbook-ext](https://github.com/Moleys/vbook-ext) |
 | **sto66 (Cedric)** | Truyện mạng | www.sto66.com | [FFrelay/vbook-extensions](https://github.com/FFrelay/vbook-extensions) |
-| **sudugu (Cedric)** | Truyện mạng | www.sudugu.org | [buudvh/leech_story_ext](https://github.com/buudvh/leech_story_ext) |
+| **sudugu (Cedric)** | Truyện mạng | www.sudugu520.com | [buudvh/leech_story_ext](https://github.com/buudvh/leech_story_ext) |
 | **速读谷 (Cedric)** | Truyện mạng | www.sudugu520.com | [qsang2025/Qsang_vbook](https://github.com/qsang2025/Qsang_vbook) |
 | **tushumi.cc (Cedric)** | Truyện mạng | www.tushumi.cc | [BaoBao666888/ext-vbook-w](https://github.com/BaoBao666888/ext-vbook-w) |
 | **uu看書 (Cedric)** | Truyện mạng | www.uuread.tw | [mrvson/ext-vbook](https://github.com/mrvson/ext-vbook) |
