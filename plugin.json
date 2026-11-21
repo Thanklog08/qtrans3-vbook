@@ -503,10 +503,10 @@
             "name": "book18 (Cedric)",
             "author": "Nahona · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/book18/plugin.zip",
-            "version": 2,
+            "version": 3,
             "source": "http://www.book18.org",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/book18/icon.png",
-            "description": "Fork từ github.com/SoulGodEve9x9/Vbook-ext (tác giả Nahona, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. V3: Fix lỗi load chapter mục thể loại",
+            "description": "Fork từ github.com/SoulGodEve9x9/Vbook-ext (tác giả Nahona, bản 3). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. V3: Fix lỗi load chapter mục thể loại. v3 (BBook): tìm kiếm theo giao diện mới của book18 (ul.list-group).",
             "type": "chinese_novel",
             "locale": "zh_CN",
             "tag": "nsfw"
