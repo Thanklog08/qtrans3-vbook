@@ -195,10 +195,10 @@
             "name": "ixdzs.tw (Cedric)",
             "author": "QuocBao · fork: BBook",
             "path": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ixdzs/plugin.zip",
-            "version": 2,
+            "version": 3,
             "source": "https://ixdzs.tw/",
             "icon": "https://raw.githubusercontent.com/Thanklog08/qtrans3-vbook/main/extensions/ixdzs/icon.png",
-            "description": "Fork từ github.com/BaoBao666888/ext-vbook-w (tác giả QuocBao, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên ixdzs8.com và ixdzs.tw",
+            "description": "Fork từ github.com/BaoBao666888/ext-vbook-w (tác giả QuocBao, bản 2). BBook chỉ dùng cá nhân, không thương mại; mọi công sức thuộc tác giả gốc. Đọc truyện trên ixdzs.tw (link ixdzs8.com cũ tự đổi)",
             "type": "chinese_novel",
             "locale": "zh_CN"
         },
